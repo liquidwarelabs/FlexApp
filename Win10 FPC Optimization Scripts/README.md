@@ -1,8 +1,8 @@
-# Win10-FPC-optimization-script
+# Win10 FPC optimization script
 
 Description <br>
 
-Powershell Script to Optimize Windows 10 for Flexapp Packaging, DO NOT USE ON GOLD/PARENT IMAGE<br>
+Powershell Script to Optimize Windows 10 for Flexapp Packaging reference workstation, DO NOT USE ON GOLD/PARENT IMAGE<br>
 
 
 Attached in this repository is the PSM1 Module <br>
