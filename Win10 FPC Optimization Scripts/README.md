@@ -2,7 +2,7 @@
 
 Description <br>
 
-Powershell Script to Optimize Windows 7 for Flexapp Packaging<br>
+Powershell Script to Optimize Windows 10 for Flexapp Packaging, DO NOT USE ON GOLD/PARENT IMAGE<br>
 
 
 Attached in this repository is the PSM1 Module <br>
