@@ -60,15 +60,16 @@ Code<br>
     to create and debug this script.
 
 .EXAMPLE
-    .\Powershellv3.ps1
+    .\Powershellv4.ps1
 .NOTES
     Author:       Jack Smith
-    Last Update:  27th June 2018
-    Version:      2.0.0
+    Last Update:  15th Jan 2019
+    Version:      4.0.0
 .LOG
 1.0.0 FPC Package Script for windows 10
 2.0.0 Updates to Code Documenting
 3.0.0 Added better pinned item clean up, Added local account added to admin group, added nGen cleanup routine, disabled Brower, and trusted installer removal
+4.0.0 Changed the Service Shutdown section to not output errors on nonexisting services. (Removed the red)
 #>
 
 # // ============
@@ -333,6 +334,10 @@ foreach ($task in $tasksToDisable)
 ###############################################
 # Disable unnecessary services
 ###############################################
+# Options: Continue [default], Stop, SilentlyContinue, Inquire.
+$ErrorActionPreference= 'silentlycontinue'
+###############################################
+
 $servicesToDisable = @(
 "AJRouter"
 "ALG"
@@ -409,14 +414,15 @@ $servicesToDisable = @(
 #(optional Service Disable if processing Appx with ProfileUnity, Disable for FPC)
 "AppReadiness"
 # "TrustedInstaller"
-#"WpnService"
+# "WpnService"
 )
 
 foreach($service in $servicesToDisable)
 {
-     # 'Force' parameter stops dependent services 
-    Stop-Service -Name $service -Force
-    Set-Service -Name $service -StartupType Disabled | Write-Host "Disabling $service..." -ForegroundColor Cyan
+    # 'Force' parameter stops dependent services
+    Write-Host "Disabling $service..." -ForegroundColor Cyan
+    Stop-Service -Name $service -Force -erroraction $ErrorActionPreference
+    Set-Service -Name $service -StartupType Disabled -erroraction $ErrorActionPreference
 }
 
 
