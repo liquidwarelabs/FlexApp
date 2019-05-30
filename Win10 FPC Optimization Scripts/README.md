@@ -524,7 +524,9 @@ $Env:PATH = [Runtime.InteropServices.RuntimeEnvironment]::GetRuntimeDirectory()
 | ------------- | ------------- |
 | OS Version  | Verified |
 | ------------- | ------------- |
+|Windows 10 1903 | YES |
+|Windows 10 1809 | YES |
 |Windows 10 1803 | YES |
 |Windows 10 1709 | YES |
 |Windows 10 1703 | YES |
-|Windows 10 1607 | YES |
+|Windows 10 1607 | NO |
