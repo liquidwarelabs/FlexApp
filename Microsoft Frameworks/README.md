@@ -7,11 +7,8 @@ https://www.dropbox.com/s/pceifz9ru9m7e5j/FrameWorks.zip?dl=1
 Framework list
 Installed with All.Bat (Run As Admin)
 ```
-sxs\microsoft-windows-netfx3-ondemand-package.cab
-jsharp\vjredist.exe
-jsharp\vjredist64.exe
-2005\vcredist_x64.exe
-2005\vcredist_x86.exe
+2005\vcredist_x64.EXE
+2005\vcredist_x86.EXE
 2008\vcredist_x64.exe
 2008\vcredist_x86.exe
 2010\vcredist_x64.exe
@@ -24,14 +21,9 @@ jsharp\vjredist64.exe
 2012\en_visual_cpp_redistributable_for_visual_studio_2012_with_update_1_x86_1204944.exe
 2013\en_visual_cpp_redistributable_for_visual_studio_2013_x64_3009077.exe
 2013\en_visual_cpp_redistributable_for_visual_studio_2013_x86_3009067.exe
-2015\en_visual_cpp_2015_redistributable_x64_8487203.exe
-2015\en_visual_cpp_2015_redistributable_x86_8487157.exe
-2015\mu_visual_cpp_2015_redistributable_update_3_x64_9052538.exe
-2015\mu_visual_cpp_2015_redistributable_update_3_x86_9052536.exe
-2015\mu_visual_cpp_redistributable_for_visual_studio_2015_update_1_x64_7277229.exe
-2015\mu_visual_cpp_redistributable_for_visual_studio_2015_update_1_x86_7277230.exe
-2015\mu_visual_cpp_redistributable_for_visual_studio_2015_x64_6837978.exe
-2015\mu_visual_cpp_redistributable_for_visual_studio_2015_x86_6837977.exe
-2017\en_visual_cpp_redistributable_for_visual_studio_2017_x64_10051449.exe
-2017\en_visual_cpp_redistributable_for_visual_studio_2017_x86_10050228.exe
+2015-2019\VC_redist.x64.exe
+2015-2019\VC_redist.x86.exe
+jsharp\vjredist.exe
+jsharp\vjredist64.exe
+sxs\microsoft-windows-netfx3-ondemand-package.cab
 ```
