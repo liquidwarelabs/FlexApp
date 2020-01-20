@@ -5,8 +5,8 @@ Description <br>
 Powershell Script to Optimize Windows 10 for Flexapp Packaging reference workstation, DO NOT USE ON GOLD/PARENT IMAGE<br>
 
 
-Attached in this repository is the PSM1 Module <br>
-A PS1 wrapper for function <br>
+Attached in this repository is the PS1 and CSV<br>
+Windows10 FPC Optimizer.zip [Windows10 FPC Optimizer.zip][Win10Optimizer]<br>
 
 
 How to Use<br>
@@ -519,6 +519,8 @@ $Env:PATH = [Runtime.InteropServices.RuntimeEnvironment]::GetRuntimeDirectory()
 ###############################################
 
 ```
+
+[Win10Optimizer]: https://github.com/liquidwarelabs/FlexApp/raw/master/Win10%20FPC%20Optimization%20Scripts/Windows10%20FPC%20Optimizer.zip
 
 | OS Version  | Verified |
 | ------------- | ------------- |
