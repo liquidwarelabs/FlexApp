@@ -2,6 +2,10 @@
 
 Download Link
 
+Exe installer
+https://liquidwarelabs.zendesk.com/hc/en-us/articles/360042135011-Runtime-Installer-Package
+
+Zip and Bat Scripts
 https://www.dropbox.com/s/pceifz9ru9m7e5j/FrameWorks.zip?dl=1
 
 Framework list
