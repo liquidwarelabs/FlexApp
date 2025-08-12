@@ -1,0 +1,40 @@
+{
+    "FrameworkPaths": {
+        "TestRunnerPath": "\\\\server\\share\\Automation\\LaunchTesting\\Flexapp-Testing\\CORE\\FlexApp-Test-Runner.ps1",
+        "BatchManagerPath": "\\\\server\\share\\Automation\\LaunchTesting\\Flexapp-Testing\\CORE\\FlexApp-Batch-Manager.ps1",
+        "GUIPath": "\\\\server\\share\\Automation\\LaunchTesting\\Flexapp-Testing\\GUI\\FlexApp-Selection-Tool.ps1",
+        "ModulesPath": "\\\\server\\share\\Automation\\LaunchTesting\\Flexapp-Testing\\MODULES",
+        "ConfigPath": "\\\\server\\share\\Automation\\LaunchTesting\\Flexapp-Testing\\CONFIG",
+        "ExamplesPath": "\\\\server\\share\\Automation\\LaunchTesting\\Flexapp-Testing\\EXAMPLES"
+    },
+    "DefaultPaths": {
+        "FFmpegPath": "\\\\server\\share\\Automation\\LaunchTesting\\Flexapp-Testing\\ffmpeg\\bin\\ffmpeg.exe",
+        "OutputBaseDir": "C:\\Temp\\FlexAppTests",
+        "NetworkFFmpegPath": "\\\\server\\share\\Automation\\LaunchTesting\\Flexapp-Testing\\ffmpeg\\bin\\ffmpeg.exe"
+    },
+    "NetworkPaths": {
+        "AutomationRoot": "\\\\server\\share\\Automation\\LaunchTesting\\Flexapp-Testing",
+        "BatchManagerPath": "\\\\server\\share\\Automation\\LaunchTesting\\Flexapp-Testing\\CORE\\FlexApp-Batch-Manager.ps1",
+        "TestRunnerPath": "\\\\server\\share\\Automation\\LaunchTesting\\Flexapp-Testing\\CORE\\FlexApp-Test-Runner.ps1"
+    },
+    "TestDefaults": {
+        "VideoCaptureSeconds": 30,
+        "WaitBeforeRecording": 3,
+        "WaitAfterAttach": 5,
+        "RecordBeforeLaunchDelay": 2,
+        "DelayBetweenTests": 5
+    },
+    "ConfigurationInfo": {
+        "Version": "1.0",
+        "Description": "Network Deployment Configuration for FlexApp Testing Framework",
+        "LastModified": "2025-01-27",
+        "DeploymentType": "NetworkServer",
+        "Notes": [
+            "This configuration file is designed for network server deployment",
+            "All paths point to \\\\server\\share\\Automation\\LaunchTesting\\Flexapp-Testing",
+            "Copy this file to CONFIG\\framework-config.json to use network paths by default",
+            "Or use with -ConfigPath parameter and -UseNetworkPaths switch",
+            "Local outputs are still written to C:\\Temp\\FlexAppTests for performance"
+        ]
+    }
+}

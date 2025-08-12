@@ -1,0 +1,38 @@
+{
+    "FrameworkPaths": {
+        "TestRunnerPath": ".\\CORE\\FlexApp-Test-Runner.ps1",
+        "BatchManagerPath": ".\\CORE\\FlexApp-Batch-Manager.ps1",
+        "GUIPath": ".\\GUI\\FlexApp-Selection-Tool.ps1",
+        "ModulesPath": ".\\MODULES",
+        "ConfigPath": ".\\CONFIG",
+        "ExamplesPath": ".\\EXAMPLES"
+    },
+    "DefaultPaths": {
+        "FFmpegPath": "C:\\ffmpeg\\bin\\ffmpeg.exe",
+        "OutputBaseDir": "C:\\Temp\\FlexAppTests",
+        "NetworkFFmpegPath": "\\\\server\\share\\Automation\\LaunchTesting\\Flexapp-Testing\\ffmpeg\\bin\\ffmpeg.exe"
+    },
+    "NetworkPaths": {
+        "AutomationRoot": "\\\\server\\share\\Automation\\LaunchTesting\\Flexapp-Testing",
+        "BatchManagerPath": "\\\\server\\share\\Automation\\LaunchTesting\\Flexapp-Testing\\CORE\\FlexApp-Batch-Manager.ps1",
+        "TestRunnerPath": "\\\\server\\share\\Automation\\LaunchTesting\\Flexapp-Testing\\CORE\\FlexApp-Test-Runner.ps1"
+    },
+    "TestDefaults": {
+        "VideoCaptureSeconds": 30,
+        "WaitBeforeRecording": 3,
+        "WaitAfterAttach": 5,
+        "RecordBeforeLaunchDelay": 2,
+        "DelayBetweenTests": 5
+    },
+    "ConfigurationInfo": {
+        "Version": "1.0",
+        "Description": "FlexApp Testing Framework Configuration",
+        "LastModified": "2025-01-27",
+        "Notes": [
+            "Modify paths here to customize framework deployment locations",
+            "Network paths allow running from central automation server",
+            "Local paths are used for standalone deployment",
+            "Framework will fall back to relative paths if config is missing"
+        ]
+    }
+}

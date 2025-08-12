@@ -1,0 +1,41 @@
+FlexApp Launch Tester Framework
+Version: 1.0.0
+Release Date: August 12, 2025
+Status: Stable Release
+
+CHANGELOG:
+==========
+
+v1.0.0 (August 12, 2025)
+- Initial stable release
+- Fixed all syntax errors in batch manager
+- Removed constrained language mode warnings from test runner
+- Fixed GUI command generation with proper line continuation
+- Implemented configurable paths throughout framework
+- Added network deployment support
+- Validated with Firefox, Chrome, and Notepad++ testing
+- Clean, production-ready codebase
+
+COMPONENTS:
+===========
+- FlexApp-Launcher.ps1: Main entry point
+- CORE/FlexApp-Batch-Manager.ps1: Batch test orchestrator
+- CORE/FlexApp-Test-Runner.ps1: Individual test executor
+- GUI/FlexApp-Selection-Tool.ps1: Graphical interface
+- MODULES/: Shared function libraries
+- CONFIG/: Configuration files and examples
+- EXAMPLES/: Documentation and sample scripts
+
+REQUIREMENTS:
+=============
+- PowerShell 5.1 or later
+- FFmpeg (included)
+- FlexApp/ProfileUnity environment
+- Network access for shared storage
+
+TESTED ENVIRONMENTS:
+===================
+- Windows 10/11 workstations
+- Constrained PowerShell language mode
+- Network share deployments
+- Local and UNC path configurations
