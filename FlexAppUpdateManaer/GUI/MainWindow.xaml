@@ -1,0 +1,1046 @@
+<Window x:Class="FlexAppUpdateManager.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                Title="FlexApp Update Manager v1.0.0"
+        Height="850" Width="950"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanResize"
+        MinHeight="800" MinWidth="800"
+        Background="{DynamicResource PrimaryBackgroundBrush}">
+    
+    <Window.Resources>
+        <!-- Color Resources for Light/Dark Mode -->
+        <SolidColorBrush x:Key="PrimaryBackgroundBrush" Color="#F5F5F5"/>
+        <SolidColorBrush x:Key="SecondaryBackgroundBrush" Color="White"/>
+        <SolidColorBrush x:Key="PrimaryTextBrush" Color="#424242"/>
+        <SolidColorBrush x:Key="SecondaryTextBrush" Color="#757575"/>
+        <SolidColorBrush x:Key="BorderBrush" Color="#E0E0E0"/>
+        <SolidColorBrush x:Key="PrimaryButtonBrush" Color="#2196F3"/>
+        <SolidColorBrush x:Key="PrimaryButtonHoverBrush" Color="#1976D2"/>
+        <SolidColorBrush x:Key="PrimaryButtonPressedBrush" Color="#0D47A1"/>
+        <SolidColorBrush x:Key="SecondaryButtonBrush" Color="#757575"/>
+        <SolidColorBrush x:Key="SecondaryButtonHoverBrush" Color="#616161"/>
+        
+        <!-- Dark Mode Color Resources -->
+        <SolidColorBrush x:Key="DarkPrimaryBackgroundBrush" Color="#2D2D30"/>
+        <SolidColorBrush x:Key="DarkSecondaryBackgroundBrush" Color="#3F3F46"/>
+        <SolidColorBrush x:Key="DarkPrimaryTextBrush" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="DarkSecondaryTextBrush" Color="#CCCCCC"/>
+        <SolidColorBrush x:Key="DarkBorderBrush" Color="#555555"/>
+        <SolidColorBrush x:Key="DarkPrimaryButtonBrush" Color="#0078D4"/>
+        <SolidColorBrush x:Key="DarkPrimaryButtonHoverBrush" Color="#106EBE"/>
+        <SolidColorBrush x:Key="DarkPrimaryButtonPressedBrush" Color="#005A9E"/>
+        <SolidColorBrush x:Key="DarkSecondaryButtonBrush" Color="#6B6B6B"/>
+        <SolidColorBrush x:Key="DarkSecondaryButtonHoverBrush" Color="#5A5A5A"/>
+        
+        <!-- Modern Button Style -->
+        <Style x:Key="ModernButton" TargetType="Button">
+            <Setter Property="Background" Value="{DynamicResource PrimaryButtonBrush}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="15,8"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="4" 
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource PrimaryButtonHoverBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource PrimaryButtonPressedBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="#BDBDBD"/>
+                                <Setter Property="Foreground" Value="#757575"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Secondary Button Style -->
+        <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource ModernButton}">
+            <Setter Property="Background" Value="{DynamicResource SecondaryButtonBrush}"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource SecondaryButtonHoverBrush}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- TextBox Style -->
+        <Style x:Key="ModernTextBox" TargetType="TextBox">
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource SecondaryBackgroundBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+
+        <!-- Label Style -->
+        <Style x:Key="ModernLabel" TargetType="Label">
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+            <Setter Property="Margin" Value="0,0,0,4"/>
+        </Style>
+
+        <!-- GroupBox Style -->
+        <Style x:Key="ModernGroupBox" TargetType="GroupBox">
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="{DynamicResource SecondaryBackgroundBrush}"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="HeaderTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" 
+                                   FontWeight="Bold" 
+                                   Foreground="{DynamicResource PrimaryTextBrush}"/>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- DataGrid Style -->
+        <Style x:Key="ModernDataGrid" TargetType="DataGrid">
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="CanUserDeleteRows" Value="False"/>
+            <Setter Property="IsReadOnly" Value="False"/>
+            <Setter Property="SelectionMode" Value="Extended"/>
+            <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="Background" Value="{DynamicResource SecondaryBackgroundBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+            <Setter Property="RowBackground" Value="{DynamicResource SecondaryBackgroundBrush}"/>
+            <Setter Property="AlternatingRowBackground" Value="{DynamicResource PrimaryBackgroundBrush}"/>
+            <Setter Property="ColumnHeaderStyle">
+                <Setter.Value>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Background" Value="{DynamicResource SecondaryBackgroundBrush}"/>
+                        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+                        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+                        <Setter Property="BorderThickness" Value="0,0,1,1"/>
+                        <Setter Property="Padding" Value="8,4"/>
+                        <Setter Property="FontWeight" Value="SemiBold"/>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- TabControl Style -->
+        <Style x:Key="ModernTabControl" TargetType="TabControl">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+        </Style>
+
+        <!-- TabItem Style -->
+        <Style x:Key="ModernTabItem" TargetType="TabItem">
+            <Setter Property="Background" Value="{DynamicResource SecondaryBackgroundBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Margin" Value="0,0,2,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Grid>
+                            <Border x:Name="Border"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="4,4,0,0">
+                                <ContentPresenter x:Name="ContentSite"
+                                                ContentSource="Header"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Margin="{TemplateBinding Padding}"/>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="{DynamicResource PrimaryButtonBrush}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="{DynamicResource PrimaryButtonHoverBrush}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ProgressBar Style -->
+        <Style x:Key="ModernProgressBar" TargetType="ProgressBar">
+            <Setter Property="Background" Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryButtonBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <!-- ScrollViewer Style -->
+        <Style x:Key="ModernScrollViewer" TargetType="ScrollViewer">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+        </Style>
+
+        <!-- RadioButton Style -->
+        <Style x:Key="ModernRadioButton" TargetType="RadioButton">
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Margin" Value="0,0,20,0"/>
+        </Style>
+
+        <!-- TextBlock Style -->
+        <Style x:Key="ModernTextBlock" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+        </Style>
+
+        <!-- ComboBox Style -->
+        <Style x:Key="ModernComboBox" TargetType="ComboBox">
+            <Setter Property="Background" Value="{DynamicResource SecondaryBackgroundBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <ToggleButton x:Name="ToggleButton"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        Background="{TemplateBinding Background}"
+                                        IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                        Focusable="false">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition />
+                                                <ColumnDefinition Width="20" />
+                                            </Grid.ColumnDefinitions>
+                                            <Border Grid.ColumnSpan="2"
+                                                    Background="{TemplateBinding Background}"
+                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                    BorderThickness="1"
+                                                    CornerRadius="4"/>
+                                            <Border Grid.Column="0"
+                                                    Margin="1"
+                                                    Background="{TemplateBinding Background}"/>
+                                            <Path Grid.Column="1"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  Data="M0,0 L0,2 L4,6 L8,2 L8,0 L4,4 z"
+                                                  Fill="{DynamicResource PrimaryTextBrush}"/>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+                            <ContentPresenter x:Name="ContentSite"
+                                            Margin="{TemplateBinding Padding}"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center"
+                                            Content="{TemplateBinding SelectionBoxItem}"
+                                            ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"/>
+                            <Popup x:Name="Popup"
+                                   AllowsTransparency="True"
+                                   IsOpen="{TemplateBinding IsDropDownOpen}"
+                                   Placement="Bottom"
+                                   PopupAnimation="Slide">
+                                <Grid x:Name="DropDown"
+                                      MinWidth="{TemplateBinding ActualWidth}"
+                                      MaxHeight="{TemplateBinding MaxDropDownHeight}"
+                                      SnapsToDevicePixels="True">
+                                    <Border x:Name="DropDownBorder"
+                                            Background="{DynamicResource SecondaryBackgroundBrush}"
+                                            BorderBrush="{DynamicResource BorderBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="0,0,4,4"/>
+                                    <ScrollViewer Margin="4,6,4,6"
+                                                SnapsToDevicePixels="True">
+                                        <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                    </ScrollViewer>
+                                </Grid>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource PrimaryButtonHoverBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsDropDownOpen" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource PrimaryButtonHoverBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Resources>
+                <Style TargetType="ComboBoxItem">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+                    <Setter Property="Padding" Value="8,4"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource PrimaryButtonHoverBrush}"/>
+                            <Setter Property="Foreground" Value="White"/>
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource PrimaryButtonBrush}"/>
+                            <Setter Property="Foreground" Value="White"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Style.Resources>
+        </Style>
+
+        <!-- CheckBox Style -->
+        <Style x:Key="ModernCheckBox" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8,0,0,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TabControl x:Name="MainTabControl" 
+                    Margin="10"
+                    Style="{StaticResource ModernTabControl}">
+            
+            <!-- Chocolatey Tab -->
+            <TabItem Header="Chocolatey Updates" x:Name="ChocolateyTab" Style="{StaticResource ModernTabItem}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Style="{StaticResource ModernScrollViewer}">
+                    <StackPanel Margin="10">
+                        
+                        <!-- Configuration Panel -->
+                        <GroupBox Header="Configuration" Style="{StaticResource ModernGroupBox}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Label Grid.Row="0" Grid.Column="0" Content="Job File:" Style="{StaticResource ModernLabel}"/>
+                                <TextBox x:Name="ChocoJobFileTextBox" 
+                                         Grid.Row="0" Grid.Column="1" 
+                                         Style="{StaticResource ModernTextBox}"
+                                         Margin="0,0,10,0"/>
+                                <Button x:Name="ChocoJobFileBrowseButton" 
+                                        Grid.Row="0" Grid.Column="2" 
+                                        Content="Browse" 
+                                        Style="{StaticResource SecondaryButton}"
+                                        Margin="0,0,10,0"/>
+                                <Button x:Name="ChocoScanButton" 
+                                        Grid.Row="0" Grid.Column="3" 
+                                        Content="Scan for Updates" 
+                                        Style="{StaticResource ModernButton}"/>
+
+                                <!-- Scan Status Row -->
+                                <Label x:Name="ChocoScanStatusLabel" 
+                                       Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4"
+                                       Content="Ready to scan..." 
+                                       Foreground="{DynamicResource PrimaryTextBrush}"
+                                       HorizontalAlignment="Center"
+                                       FontWeight="Bold"
+                                       FontSize="11"
+                                       Margin="0,10,0,0"/>
+
+                                <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" 
+                                       Content="Scanning can take a while depending on the number of packages."
+                                       Foreground="{DynamicResource SecondaryTextBrush}" 
+                                       FontStyle="Italic" 
+                                       FontSize="11"
+                                       Margin="0,10,0,0"/>
+                                
+                                <Button x:Name="ChocoCancelScanButton" 
+                                        Grid.Row="2" Grid.Column="3" 
+                                        Content="Cancel Scan" 
+                                        Style="{StaticResource SecondaryButton}"
+                                        Visibility="Collapsed"/>
+                            </Grid>
+                        </GroupBox>
+
+                        <!-- Updates Panel -->
+                        <GroupBox Header="Available Updates" Style="{StaticResource ModernGroupBox}">
+                            <StackPanel>
+                                <DataGrid x:Name="ChocoUpdatesGrid" 
+                                          Style="{StaticResource ModernDataGrid}"
+                                          Height="300"
+                                          Margin="0,0,0,10">
+                                    <DataGrid.Columns>
+                                        <DataGridCheckBoxColumn x:Name="ChocoSelectedColumn" 
+                                                              Header="Select" 
+                                                              Width="60"
+                                                              Binding="{Binding Selected}"/>
+                                        <DataGridTextColumn x:Name="ChocoNameColumn" 
+                                                          Header="Package Name" 
+                                                          Width="250" 
+                                                          IsReadOnly="True"
+                                                          Binding="{Binding Name}"/>
+                                        <DataGridTextColumn x:Name="ChocoCurrentVersionColumn" 
+                                                          Header="Current Version" 
+                                                          Width="150" 
+                                                          IsReadOnly="True"
+                                                          Binding="{Binding CurrentVersion}"/>
+                                        <DataGridTextColumn x:Name="ChocoNewVersionColumn" 
+                                                          Header="New Version" 
+                                                          Width="150" 
+                                                          IsReadOnly="True"
+                                                          Binding="{Binding NewVersion}"/>
+                                        <DataGridTextColumn x:Name="ChocoSizeColumn" 
+                                                          Header="Size (MB)" 
+                                                          Width="100" 
+                                                          IsReadOnly="True"
+                                                          Binding="{Binding SizeMB}"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+
+                                <StackPanel Orientation="Horizontal">
+                                    <Button x:Name="ChocoSelectAllButton" 
+                                            Content="Select All" 
+                                            Style="{StaticResource SecondaryButton}"
+                                            Margin="0,0,10,0"/>
+                                    <Button x:Name="ChocoSelectNoneButton" 
+                                            Content="Select None" 
+                                            Style="{StaticResource SecondaryButton}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <!-- Action Panel -->
+                        <GroupBox Header="Actions" Style="{StaticResource ModernGroupBox}">
+                            <StackPanel>
+                                <Button x:Name="ChocoProcessButton" 
+                                        Content="Process Selected Updates" 
+                                        Style="{StaticResource ModernButton}"
+                                        HorizontalAlignment="Left"/>
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Winget Tab -->
+            <TabItem Header="Winget Updates" x:Name="WingetTab" Style="{StaticResource ModernTabItem}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Style="{StaticResource ModernScrollViewer}">
+                    <StackPanel Margin="10">
+                        
+                        <!-- Configuration Panel -->
+                        <GroupBox Header="Configuration" Style="{StaticResource ModernGroupBox}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Label Grid.Row="0" Grid.Column="0" Content="Job File:" Style="{StaticResource ModernLabel}"/>
+                                <TextBox x:Name="WingetJobFileTextBox" 
+                                         Grid.Row="0" Grid.Column="1" 
+                                         Style="{StaticResource ModernTextBox}"
+                                         Margin="0,0,10,0"/>
+                                <Button x:Name="WingetJobFileBrowseButton" 
+                                        Grid.Row="0" Grid.Column="2" 
+                                        Content="Browse" 
+                                        Style="{StaticResource SecondaryButton}"
+                                        Margin="0,0,10,0"/>
+                                <Button x:Name="WingetScanButton" 
+                                        Grid.Row="0" Grid.Column="3" 
+                                        Content="Scan for Updates" 
+                                        Style="{StaticResource ModernButton}"/>
+
+                                <!-- Scan Status Row -->
+                                <Label x:Name="WingetCurrentPackageLabel" 
+                                       Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4"
+                                       Content="Ready to scan..." 
+                                       Foreground="{DynamicResource PrimaryTextBrush}"
+                                       HorizontalAlignment="Center"
+                                       FontWeight="Bold"
+                                       FontSize="11"
+                                       Margin="0,10,0,0"/>
+
+                                <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" 
+                                       Content="Scanning can take a while depending on the number of packages."
+                                       Foreground="{DynamicResource SecondaryTextBrush}" 
+                                       FontStyle="Italic" 
+                                       FontSize="11"
+                                       Margin="0,10,0,0"/>
+                                
+                                <Button x:Name="WingetCancelScanButton" 
+                                        Grid.Row="2" Grid.Column="3" 
+                                        Content="Cancel Scan" 
+                                        Style="{StaticResource SecondaryButton}"
+                                        Visibility="Collapsed"/>
+                            </Grid>
+                        </GroupBox>
+
+                        <!-- Updates Panel -->
+                        <GroupBox Header="Available Updates" Style="{StaticResource ModernGroupBox}">
+                            <StackPanel>
+                                <DataGrid x:Name="WingetUpdatesGrid" 
+                                          Style="{StaticResource ModernDataGrid}"
+                                          Height="300"
+                                          Margin="0,0,0,10">
+                                    <DataGrid.Columns>
+                                        <DataGridCheckBoxColumn x:Name="WingetSelectedColumn" 
+                                                              Header="Select" 
+                                                              Width="60"
+                                                              Binding="{Binding Selected}"/>
+                                        <DataGridTextColumn x:Name="WingetNameColumn" 
+                                                          Header="Package Name" 
+                                                          Width="250" 
+                                                          IsReadOnly="True"
+                                                          Binding="{Binding Name}"/>
+                                        <DataGridTextColumn x:Name="WingetCurrentVersionColumn" 
+                                                          Header="Current Version" 
+                                                          Width="150" 
+                                                          IsReadOnly="True"
+                                                          Binding="{Binding CurrentVersion}"/>
+                                        <DataGridTextColumn x:Name="WingetNewVersionColumn" 
+                                                          Header="New Version" 
+                                                          Width="150" 
+                                                          IsReadOnly="True"
+                                                          Binding="{Binding NewVersion}"/>
+                                        <DataGridTextColumn x:Name="WingetSizeColumn" 
+                                                          Header="Size (MB)" 
+                                                          Width="100" 
+                                                          IsReadOnly="True"
+                                                          Binding="{Binding SizeMB}"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+
+                                <StackPanel Orientation="Horizontal">
+                                    <Button x:Name="WingetSelectAllButton" 
+                                            Content="Select All" 
+                                            Style="{StaticResource SecondaryButton}"
+                                            Margin="0,0,10,0"/>
+                                    <Button x:Name="WingetSelectNoneButton" 
+                                            Content="Select None" 
+                                            Style="{StaticResource SecondaryButton}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <!-- Action Panel -->
+                        <GroupBox Header="Actions" Style="{StaticResource ModernGroupBox}">
+                            <StackPanel>
+                                <Button x:Name="WingetProcessButton" 
+                                        Content="Process Selected Updates" 
+                                        Style="{StaticResource ModernButton}"
+                                        HorizontalAlignment="Left"/>
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Configuration Manager Tab -->
+            <TabItem Header="Configuration Manager" x:Name="ConfigurationManagerTab" Style="{StaticResource ModernTabItem}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Style="{StaticResource ModernScrollViewer}">
+                    <StackPanel Margin="10">
+                        
+                                                <!-- Connection Panel -->
+                        <GroupBox Header="Configuration Manager Connection" Style="{StaticResource ModernGroupBox}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Label Grid.Row="0" Grid.Column="0" Content="Site Server:" Style="{StaticResource ModernLabel}"/>
+                                <TextBox x:Name="CMServerTextBox"
+                                         Grid.Row="0" Grid.Column="1"
+                                         Style="{StaticResource ModernTextBox}"
+                                         Margin="0,0,10,0"/>
+
+                                <Label Grid.Row="1" Grid.Column="0" Content="Site Code:" Style="{StaticResource ModernLabel}"/>
+                                <TextBox x:Name="CMSiteCodeTextBox"
+                                         Grid.Row="1" Grid.Column="1"
+                                         Style="{StaticResource ModernTextBox}"
+                                         Margin="0,0,10,0"/>
+
+                                <Button x:Name="CMConnectButton"
+                                        Grid.Row="0" Grid.Column="2"
+                                        Grid.RowSpan="2"
+                                        Content="Connect"
+                                        Style="{StaticResource ModernButton}"
+                                        Margin="0,0,10,0"/>
+                                <Button x:Name="CMDisconnectButton"
+                                        Grid.Row="0" Grid.Column="3"
+                                        Grid.RowSpan="2"
+                                        Content="Disconnect"
+                                        Style="{StaticResource SecondaryButton}"/>
+
+                                <Label x:Name="CMConnectionStatusLabel"
+                                       Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4"
+                                       Content="Ready - Click 'Connect' to begin"
+                                       Foreground="{DynamicResource SecondaryTextBrush}"
+                                       Margin="0,10,0,0"/>
+                            </Grid>
+                        </GroupBox>
+
+
+
+                        <!-- Applications Panel -->
+                        <GroupBox Header="Applications" Style="{StaticResource ModernGroupBox}">
+                            <StackPanel>
+                                <DataGrid x:Name="CMApplicationsGrid" 
+                                          Style="{StaticResource ModernDataGrid}"
+                                          Height="300"
+                                          Margin="0,0,0,10">
+                                    <DataGrid.Columns>
+                                        <DataGridCheckBoxColumn x:Name="CMSelectedColumn" 
+                                                                Header="Select" 
+                                                                Width="60"
+                                                                Binding="{Binding Selected}"/>
+                                        <DataGridTextColumn x:Name="CMNameColumn" 
+                                                            Header="Application Name" 
+                                                            Width="250" 
+                                                            IsReadOnly="True"
+                                                            Binding="{Binding Name}"/>
+                                        <DataGridTextColumn x:Name="CMVersionColumn" 
+                                                            Header="Version" 
+                                                            Width="150" 
+                                                            IsReadOnly="True"
+                                                            Binding="{Binding Version}"/>
+                                        <DataGridTextColumn x:Name="CMPublisherColumn" 
+                                                            Header="Publisher" 
+                                                            Width="150" 
+                                                            IsReadOnly="True"
+                                                            Binding="{Binding Publisher}"/>
+                                        <DataGridTextColumn x:Name="CMStatusColumn" 
+                                                            Header="Status" 
+                                                            Width="100" 
+                                                            IsReadOnly="True"
+                                                            Binding="{Binding Status}"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+
+                                                                <StackPanel Orientation="Horizontal">
+                                    <Button x:Name="CMSelectAllButton"
+                                            Content="Select All"
+                                            Style="{StaticResource SecondaryButton}"
+                                            Margin="0,0,10,0"/>
+                                    <Button x:Name="CMSelectNoneButton"
+                                            Content="Select None"
+                                            Style="{StaticResource SecondaryButton}"
+                                            Margin="0,0,10,0"/>
+                                    <Button x:Name="CMProcessButton"
+                                            Content="Start Package Update"
+                                            Style="{StaticResource ModernButton}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+                        <!-- ProfileUnity Config Tab -->
+            <TabItem Header="ProfileUnity Config" x:Name="ProfileUnityTab" Style="{StaticResource ModernTabItem}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Style="{StaticResource ModernScrollViewer}">
+                    <StackPanel Margin="10">
+
+                        <!-- Connection Panel -->
+                        <GroupBox Header="ProfileUnity Configuration Selection" Style="{StaticResource ModernGroupBox}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Button x:Name="PULoadConfigsButton"
+                                        Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                                        Content="Load Configurations"
+                                        Style="{StaticResource ModernButton}"
+                                        Margin="0,0,0,0"/>
+
+                                <Label Grid.Row="1" Grid.Column="0" Content="Configuration:" Style="{StaticResource ModernLabel}"/>
+                                <ComboBox x:Name="PUConfigComboBox"
+                                         Grid.Row="1" Grid.Column="1"
+                                         Style="{StaticResource ModernComboBox}"
+                                         Margin="0,0,10,0"/>
+                                <Button x:Name="PUScanButton"
+                                        Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2"
+                                        Content="Scan for Updates"
+                                        Style="{StaticResource ModernButton}"
+                                        Margin="0,0,0,0"/>
+
+                                <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4"
+                                       Content="Connect to ProfileUnity server to manage FlexApp configurations."
+                                       Foreground="{DynamicResource SecondaryTextBrush}"
+                                       FontStyle="Italic"
+                                       FontSize="11"
+                                       Margin="0,10,0,0"/>
+
+                                <ProgressBar x:Name="PUProgressBar"
+                                           Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4"
+                                           Height="20"
+                                           Style="{StaticResource ModernProgressBar}"
+                                           Margin="0,10,0,0"
+                                           Visibility="Collapsed"/>
+                            </Grid>
+                        </GroupBox>
+
+                        <!-- FlexApps Panel -->
+                        <GroupBox Header="FlexApp Updates Available" Style="{StaticResource ModernGroupBox}">
+                            <StackPanel>
+                                <DataGrid x:Name="PUFlexAppsGrid"
+                                          Style="{StaticResource ModernDataGrid}"
+                                          Height="300"
+                                          Margin="0,0,0,10">
+                                    <DataGrid.Columns>
+                                        <DataGridCheckBoxColumn x:Name="PUSelectedColumn"
+                                                                Header="Select"
+                                                                Width="60"
+                                                                Binding="{Binding Selected}"/>
+                                        <DataGridTextColumn x:Name="PUNameColumn"
+                                                            Header="FlexApp Name"
+                                                            Width="250"
+                                                            IsReadOnly="True"
+                                                            Binding="{Binding Name}"/>
+                                        <DataGridTextColumn x:Name="PUCurrentVersionColumn"
+                                                            Header="Config Version"
+                                                            Width="120"
+                                                            IsReadOnly="True"
+                                                            Binding="{Binding CurrentVersion}"/>
+                                        <DataGridTextColumn x:Name="PUNewVersionColumn"
+                                                            Header="Latest Version"
+                                                            Width="120"
+                                                            IsReadOnly="True"
+                                                            Binding="{Binding NewVersion}"/>
+                                        <DataGridTextColumn x:Name="PUFilterColumn"
+                                                            Header="Filter"
+                                                            Width="200"
+                                                            IsReadOnly="True"
+                                                            Binding="{Binding Filter}"/>
+                                        <DataGridTextColumn x:Name="PUSequenceColumn"
+                                                            Header="Seq"
+                                                            Width="50"
+                                                            IsReadOnly="True"
+                                                            Binding="{Binding Sequence}"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+
+                                <StackPanel Orientation="Horizontal">
+                                    <Button x:Name="PUSelectAllButton"
+                                            Content="Select All"
+                                            Style="{StaticResource SecondaryButton}"
+                                            Margin="0,0,10,0"/>
+                                    <Button x:Name="PUSelectNoneButton"
+                                            Content="Select None"
+                                            Style="{StaticResource SecondaryButton}"
+                                            Margin="0,0,10,0"/>
+                                    <Button x:Name="PULoadFiltersButton"
+                                            Content="Load Filters"
+                                            Style="{StaticResource SecondaryButton}"
+                                            Margin="0,0,10,0"/>
+                                    <Label Content="Click 'Load Filters' after scan to enable filter dropdown editing"
+                                           Foreground="{DynamicResource SecondaryTextBrush}"
+                                           FontStyle="Italic"
+                                           FontSize="11"
+                                           VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </GroupBox>
+
+                        <!-- Actions Panel -->
+                        <GroupBox Header="Actions" Style="{StaticResource ModernGroupBox}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Button x:Name="PUPreviewButton"
+                                        Grid.Row="0" Grid.Column="0"
+                                        Content="Preview Changes"
+                                        Style="{StaticResource SecondaryButton}"
+                                        Margin="0,0,10,0"
+                                        IsEnabled="False"/>
+                                <Button x:Name="PUCommitButton"
+                                        Grid.Row="0" Grid.Column="1"
+                                        Content="Commit and Save"
+                                        Style="{StaticResource ModernButton}"
+                                        Margin="0,0,10,0"
+                                        IsEnabled="False"/>
+                                <CheckBox x:Name="PUDeployCheckBox"
+                                         Grid.Row="0" Grid.Column="2"
+                                         Content="Deploy configuration after save"
+                                         Style="{StaticResource ModernCheckBox}"
+                                         VerticalAlignment="Center"/>
+
+                                <Label x:Name="PUStatusLabel"
+                                       Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4"
+                                       Content="Ready"
+                                       Foreground="{DynamicResource SecondaryTextBrush}"
+                                       Margin="0,10,0,0"/>
+                            </Grid>
+                        </GroupBox>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Settings Tab -->
+            <TabItem Header="Settings" x:Name="SettingsTab" Style="{StaticResource ModernTabItem}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Style="{StaticResource ModernScrollViewer}">
+                    <StackPanel Margin="10">
+                        
+                        <!-- Appearance Settings -->
+                        <GroupBox Header="Appearance" Style="{StaticResource ModernGroupBox}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Label Grid.Row="0" Grid.Column="0" Content="Theme:" Style="{StaticResource ModernLabel}"/>
+                                <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <RadioButton x:Name="LightModeRadio" Content="Light" IsChecked="True" Style="{StaticResource ModernRadioButton}"/>
+                                    <RadioButton x:Name="DarkModeRadio" Content="Dark" IsChecked="False" Style="{StaticResource ModernRadioButton}"/>
+                                </StackPanel>
+                                <Button x:Name="SettingsThemeToggleButton" 
+                                        Grid.Row="0" Grid.Column="2" 
+                                        Content="Apply Theme" 
+                                        Style="{StaticResource ModernButton}"/>
+                            </Grid>
+                        </GroupBox>
+                        
+                        <!-- ProfileUnity Server Settings -->
+                        <GroupBox Header="ProfileUnity Server Settings" Style="{StaticResource ModernGroupBox}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Label Grid.Row="0" Grid.Column="0" Content="Server Name:" Style="{StaticResource ModernLabel}"/>
+                                <TextBox x:Name="SettingsServerTextBox" 
+                                         Grid.Row="0" Grid.Column="1" 
+                                         Style="{StaticResource ModernTextBox}"
+                                         Margin="0,0,10,0"/>
+                                <Button x:Name="SettingsTestConnectionButton" 
+                                        Grid.Row="0" Grid.Column="2" 
+                                        Content="Test Connection" 
+                                        Style="{StaticResource ModernButton}"/>
+
+                                <Label Grid.Row="1" Grid.Column="0" Content="Server Port:" Style="{StaticResource ModernLabel}"/>
+                                <TextBox x:Name="SettingsServerPortTextBox" 
+                                         Grid.Row="1" Grid.Column="1" 
+                                         Style="{StaticResource ModernTextBox}"
+                                         Margin="0,0,10,0"/>
+
+                                <Label Grid.Row="2" Grid.Column="0" Content="Admin User:" Style="{StaticResource ModernLabel}"/>
+                                <TextBox x:Name="SettingsAdminUserTextBox" 
+                                         Grid.Row="2" Grid.Column="1" 
+                                         Style="{StaticResource ModernTextBox}"
+                                         Margin="0,0,10,0"/>
+                            </Grid>
+                        </GroupBox>
+
+                        <!-- File Paths -->
+                        <GroupBox Header="File Paths" Style="{StaticResource ModernGroupBox}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Label Grid.Row="0" Grid.Column="0" Content="FlexApp Client:" Style="{StaticResource ModernLabel}"/>
+                                <TextBox x:Name="SettingsFlexAppClientTextBox" 
+                                         Grid.Row="0" Grid.Column="1" 
+                                         Style="{StaticResource ModernTextBox}"
+                                         Margin="0,0,10,0"/>
+                                <Button x:Name="SettingsFlexAppClientBrowseButton" 
+                                        Grid.Row="0" Grid.Column="2" 
+                                        Content="Browse" 
+                                        Style="{StaticResource SecondaryButton}"/>
+
+                                <Label Grid.Row="1" Grid.Column="0" Content="Password File:" Style="{StaticResource ModernLabel}"/>
+                                <TextBox x:Name="SettingsPasswordFileTextBox" 
+                                         Grid.Row="1" Grid.Column="1" 
+                                         Style="{StaticResource ModernTextBox}"
+                                         Margin="0,0,10,0"/>
+                                <Button x:Name="SettingsPasswordFileBrowseButton" 
+                                        Grid.Row="1" Grid.Column="2" 
+                                        Content="Browse" 
+                                        Style="{StaticResource SecondaryButton}"/>
+
+                                <Label Grid.Row="2" Grid.Column="0" Content="AES Key File:" Style="{StaticResource ModernLabel}"/>
+                                <TextBox x:Name="SettingsAESKeyFileTextBox" 
+                                         Grid.Row="2" Grid.Column="1" 
+                                         Style="{StaticResource ModernTextBox}"
+                                         Margin="0,0,10,0"/>
+                                <Button x:Name="SettingsAESKeyFileBrowseButton" 
+                                        Grid.Row="2" Grid.Column="2" 
+                                        Content="Browse" 
+                                        Style="{StaticResource SecondaryButton}"/>
+
+                                <Label Grid.Row="3" Grid.Column="0" Content="Temp Path:" Style="{StaticResource ModernLabel}"/>
+                                <TextBox x:Name="SettingsTempPathTextBox" 
+                                         Grid.Row="3" Grid.Column="1" 
+                                         Style="{StaticResource ModernTextBox}"
+                                         Margin="0,0,10,0"/>
+                                <Button x:Name="SettingsTempPathBrowseButton" 
+                                        Grid.Row="3" Grid.Column="2" 
+                                        Content="Browse" 
+                                        Style="{StaticResource SecondaryButton}"/>
+
+                                <Label Grid.Row="4" Grid.Column="0" Content="Default File:" Style="{StaticResource ModernLabel}"/>
+                                <TextBox x:Name="SettingsDefaultFileTextBox" 
+                                         Grid.Row="4" Grid.Column="1" 
+                                         Style="{StaticResource ModernTextBox}"
+                                         Margin="0,0,10,0"/>
+                                <Button x:Name="SettingsDefaultFileBrowseButton" 
+                                        Grid.Row="4" Grid.Column="2" 
+                                        Content="Browse" 
+                                        Style="{StaticResource SecondaryButton}"/>
+
+                                <Label Grid.Row="5" Grid.Column="0" Content="Primary Server:" Style="{StaticResource ModernLabel}"/>
+                                <TextBox x:Name="SettingsPrimaryServerTextBox" 
+                                         Grid.Row="5" Grid.Column="1" 
+                                         Style="{StaticResource ModernTextBox}"
+                                         Margin="0,0,10,0"/>
+                            </Grid>
+                        </GroupBox>
+
+                        <!-- Other Settings -->
+                        <GroupBox Header="Other Settings" Style="{StaticResource ModernGroupBox}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Label Grid.Row="0" Grid.Column="0" Content="Process Wait Time (seconds):" Style="{StaticResource ModernLabel}"/>
+                                <TextBox x:Name="SettingsProcessWaitTextBox" 
+                                         Grid.Row="0" Grid.Column="1" 
+                                         Style="{StaticResource ModernTextBox}"
+                                         Margin="0,0,10,0"/>
+                            </Grid>
+                        </GroupBox>
+
+                        <!-- Actions -->
+                        <GroupBox Header="Actions" Style="{StaticResource ModernGroupBox}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Button x:Name="SettingsSaveButton" 
+                                        Grid.Row="0" Grid.Column="0"
+                                        Content="Save Settings" 
+                                        Style="{StaticResource ModernButton}"
+                                        Margin="0,0,10,0"/>
+                                
+                                <Button x:Name="SettingsResetButton" 
+                                        Grid.Row="0" Grid.Column="1"
+                                        Content="Reset to Defaults" 
+                                        Style="{StaticResource SecondaryButton}"
+                                        Margin="0,0,10,0"/>
+                                
+                                                                <Button x:Name="SettingsCancelRestartButton"
+                                        Grid.Row="0" Grid.Column="2"
+                                        Content="Cancel All &amp; Restart Service"
+                                        Style="{StaticResource SecondaryButton}"/>
+
+                                <Label x:Name="SettingsGlobalStatusLabel" 
+                                       Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4"
+                                       Content="Ready" 
+                                       Foreground="{DynamicResource SecondaryTextBrush}"
+                                       Margin="0,10,0,0"/>
+                            </Grid>
+                        </GroupBox>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
