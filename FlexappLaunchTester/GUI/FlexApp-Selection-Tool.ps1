@@ -43,6 +43,33 @@ function Get-FlexAppInfo {
             $modifiedDate = [DateTime]::MinValue
         }
         
+        # Robust boolean parsing - handles non-standard boolean values
+        $disabledValue = $package.Disabled
+        $parsedDisabled = $false
+        
+        if ($null -ne $disabledValue) {
+            $disabledStr = $disabledValue.ToString().Trim().ToLower()
+            switch ($disabledStr) {
+                "true" { $parsedDisabled = $true }
+                "1" { $parsedDisabled = $true }
+                "yes" { $parsedDisabled = $true }
+                "y" { $parsedDisabled = $true }
+                "false" { $parsedDisabled = $false }
+                "0" { $parsedDisabled = $false }
+                "no" { $parsedDisabled = $false }
+                "n" { $parsedDisabled = $false }
+                "" { $parsedDisabled = $false }
+                default { 
+                    # Try to parse as boolean, fallback to false
+                    if ([bool]::TryParse($disabledStr, [ref]$parsedDisabled)) {
+                        # Successfully parsed
+                    } else {
+                        $parsedDisabled = $false
+                    }
+                }
+            }
+        }
+        
         # Build app info object
         $appInfo = @{
             Name = $package.DisplayName
@@ -57,7 +84,7 @@ function Get-FlexAppInfo {
             DateModified = $package.DateModified
             DateModifiedParsed = $modifiedDate
             UseCount = $package.UseCount
-            Disabled = [bool]::Parse($package.Disabled)
+            Disabled = $parsedDisabled
             SizeInGB = $package.SizeInGb
             ActualSizeInBytes = $package.ActualSizeInBytes
             ActualSizeMB = [math]::Round($package.ActualSizeInBytes / 1MB, 2)
@@ -73,6 +100,7 @@ function Get-FlexAppInfo {
         return New-Object PSObject -Property $appInfo
     }
     catch {
+        Write-Warning "Failed to parse XML: $XmlPath - $($_.Exception.Message)"
         return $null
     }
 }
