@@ -207,7 +207,7 @@ function Stop-WPFAllProcesses {
             if ($script:ChocoJobTimer) {
                 try {
                     $script:ChocoJobTimer.Stop()
-                    $script:ChocoJobTimer.Dispose()
+                    # DispatcherTimer doesn't have Dispose() method
                     $script:ChocoJobTimer = $null
                     Write-LogMessage "Chocolatey timer stopped" -Level Success -Tab "Settings"
                 }
@@ -221,7 +221,7 @@ function Stop-WPFAllProcesses {
             if ($script:WingetJobTimer) {
                 try {
                     $script:WingetJobTimer.Stop()
-                    $script:WingetJobTimer.Dispose()
+                    # DispatcherTimer doesn't have Dispose() method
                     $script:WingetJobTimer = $null
                     Write-LogMessage "Winget timer stopped" -Level Success -Tab "Settings"
                 }

@@ -84,7 +84,15 @@ function Get-WPFChocoUpdateCandidates {
                     continue
                 }
                 
-                Write-LogMessage "Package '$packageName' Chocolatey version: $chocolateyVersion" -Level Info -Tab "Chocolatey"
+                # Format version to 4-dot notation (e.g., 25.0 -> 25.0.0.0, 20.01 -> 20.1.0.0)
+                $formattedChocoVersion = $chocolateyVersion
+                if ($chocolateyVersion -match '^(\d+)\.(\d+)$') {
+                    $formattedChocoVersion = "$([int]$Matches[1]).$([int]$Matches[2]).0.0"
+                } elseif ($chocolateyVersion -match '^(\d+)\.(\d+)\.(\d+)$') {
+                    $formattedChocoVersion = "$([int]$Matches[1]).$([int]$Matches[2]).$([int]$Matches[3]).0"
+                }
+                
+                Write-LogMessage "Package '$packageName' Chocolatey version: $formattedChocoVersion (original: $chocolateyVersion)" -Level Info -Tab "Chocolatey"
                 
                 if ($existingFlexApp) {
                     # Extract the maximum version from FlexApp inventory
@@ -98,26 +106,118 @@ function Get-WPFChocoUpdateCandidates {
                         $updateCandidate = [PSCustomObject]@{
                             Name = $packageName
                             CurrentVersion = $currentVersion
-                            NewVersion = $chocolateyVersion
+                            NewVersion = $formattedChocoVersion
                             SizeMB = $package.size
                             Selected = $false
+                            # Map CSV installer fields to JSON structure
+                            Installer = if ($package.installer) { $package.installer } else { $null }
+                            InstallerArgs = if ($package.installerargs) { $package.installerargs } else { $null }
+                            InstallerUsername = if ($package.installerusername) { $package.installerusername } else { $null }
+                            InstallerPassword = if ($package.installerpassword) { $package.installerpassword } else { $null }
+                            InstallerExitCode = if ($package.installerexitcode) { $package.installerexitcode } else { $null }
+                            InstallerTimeoutMs = if ($package.installertimeoutms) { $package.installertimeoutms } else { $null }
+                            # Map other CSV fields
+                            Path = if ($package.path) { $package.path } else { $null }
+                            PathUsername = if ($package.pathusername) { $package.pathusername } else { $null }
+                            PathPassword = if ($package.pathpassword) { $package.pathpassword } else { $null }
+                            InitiatingUsername = if ($package.initiatingusername) { $package.initiatingusername } else { $null }
+                            SizeGb = if ($package.sizegb) { $package.sizegb } else { $null }
+                            Fixed = if ($package.fixed) { $package.fixed } else { $null }
+                            Test = if ($package.test) { $package.test } else { "False" }
+                            PuAddress = if ($package.puaddress) { $package.puaddress } else { $null }
+                            PuUsername = if ($package.puusername) { $package.puusername } else { $null }
+                            PuPassword = if ($package.pupassword) { $package.pupassword } else { $null }
+                            NoHCCapture = if ($package.nohccapture) { $package.nohccapture } else { $null }
+                            NoSystemRestore = if ($package.nosystemrestore) { $package.nosystemrestore } else { $null }
+                            AltRestoreCmd = if ($package.altrestorecmd) { $package.altrestorecmd } else { $null }
+                            AltRestoreCmdArgs = if ($package.altrestorecmdargs) { $package.altrestorecmdargs } else { $null }
+                            WaitAfterInstallerExitsMs = if ($package.waitafterinstallerexitsms) { $package.waitafterinstallerexitsms } else { $null }
+                            DontCopyInstallerLocal = if ($package.dontcopyinstallerlocal) { $package.dontcopyinstallerlocal } else { $null }
+                            CopyInstallerFolderLocal = if ($package.copyinstallerfolderlocal) { $package.copyinstallerfolderlocal } else { $null }
+                            InstallerFolder = if ($package.installerfolder) { $package.installerfolder } else { $null }
+                            PreActivationScript = if ($package.preactivationscript) { $package.preactivationscript } else { $null }
+                            PostActivationScript = if ($package.postactivationscript) { $package.postactivationscript } else { $null }
+                            PreDeactivationScript = if ($package.predeactivationscript) { $package.predeactivationscript } else { $null }
+                            PostDeactivationScript = if ($package.postdeactivationscript) { $package.postdeactivationscript } else { $null }
+                            NoCallToHome = if ($package.nocalltohome) { $package.nocalltohome } else { $null }
+                            DontCreateFlexAppOne = if ($package.dontcreateflexappone) { $package.dontcreateflexappone } else { $null }
+                            DontCreateFlexAppOneV1 = if ($package.dontcreateflexapponev1) { $package.dontcreateflexapponev1 } else { $null }
+                            DontCreateFlexAppOneV2 = if ($package.dontcreateflexapponev2) { $package.dontcreateflexapponev2 } else { $null }
+                            FlexAppOneCliOverride = if ($package.flexapponeclioverride) { $package.flexapponeclioverride } else { $null }
+                            DontCaptureUserProfileData = if ($package.dontcaptureuserprofiledata) { $package.dontcaptureuserprofiledata } else { $null }
+                            DontCaptureUserRegistry = if ($package.dontcaptureuserregistry) { $package.dontcaptureuserregistry } else { $null }
+                            DontCapture = if ($package.dontcapture) { $package.dontcapture } else { $null }
+                            PackagesXml = if ($package.packagesxml) { $package.packagesxml } else { $null }
+                            PuConfiguration = if ($package.puconfiguration) { $package.puconfiguration } else { $null }
+                            PuFilter = if ($package.pufilter) { $package.pufilter } else { $null }
+                            PuDescription = if ($package.pudescription) { $package.pudescription } else { $null }
+                            CustomStorageUrl = if ($package.customstorageurl) { $package.customstorageurl } else { $null }
+                            AzureMaximumConcurrency = if ($package.azuremaximumconcurrency) { $package.azuremaximumconcurrency } else { $null }
+                            AzureInitialTransferSizeMb = if ($package.azureinitialtransfersizemb) { $package.azureinitialtransfersizemb } else { $null }
+                            AzureMaximumTransferSizeMb = if ($package.azuremaximumtransfersizemb) { $package.azuremaximumtransfersizemb } else { $null }
                         }
                         $updateCandidates += $updateCandidate
-                        Write-LogMessage "Found update for '$packageName': $currentVersion -> $chocolateyVersion" -Level Success -Tab "Chocolatey"
+                        Write-LogMessage "Found update for '$packageName': $currentVersion -> $formattedChocoVersion" -Level Success -Tab "Chocolatey"
                     } else {
-                        Write-LogMessage "Package '$packageName' version $currentVersion is current (Chocolatey: $chocolateyVersion)" -Level Info -Tab "Chocolatey"
+                        Write-LogMessage "Package '$packageName' version $currentVersion is current (Chocolatey: $formattedChocoVersion)" -Level Info -Tab "Chocolatey"
                     }
                 } else {
                     # Package not found in FlexApp inventory - create candidate for new packaging
                     $updateCandidate = [PSCustomObject]@{
                         Name = $packageName
                         CurrentVersion = $null  # No current version in ProfileUnity
-                        NewVersion = $chocolateyVersion
+                        NewVersion = $formattedChocoVersion
                         SizeMB = $package.size
                         Selected = $false
+                        # Map CSV installer fields to JSON structure
+                        Installer = if ($package.installer) { $package.installer } else { $null }
+                        InstallerArgs = if ($package.installerargs) { $package.installerargs } else { $null }
+                        InstallerUsername = if ($package.installerusername) { $package.installerusername } else { $null }
+                        InstallerPassword = if ($package.installerpassword) { $package.installerpassword } else { $null }
+                        InstallerExitCode = if ($package.installerexitcode) { $package.installerexitcode } else { $null }
+                        InstallerTimeoutMs = if ($package.installertimeoutms) { $package.installertimeoutms } else { $null }
+                        # Map other CSV fields
+                        Path = if ($package.path) { $package.path } else { $null }
+                        PathUsername = if ($package.pathusername) { $package.pathusername } else { $null }
+                        PathPassword = if ($package.pathpassword) { $package.pathpassword } else { $null }
+                        InitiatingUsername = if ($package.initiatingusername) { $package.initiatingusername } else { $null }
+                        SizeGb = if ($package.sizegb) { $package.sizegb } else { $null }
+                        Fixed = if ($package.fixed) { $package.fixed } else { $null }
+                        Test = if ($package.test) { $package.test } else { "False" }
+                        PuAddress = if ($package.puaddress) { $package.puaddress } else { $null }
+                        PuUsername = if ($package.puusername) { $package.puusername } else { $null }
+                        PuPassword = if ($package.pupassword) { $package.pupassword } else { $null }
+                        NoHCCapture = if ($package.nohccapture) { $package.nohccapture } else { $null }
+                        NoSystemRestore = if ($package.nosystemrestore) { $package.nosystemrestore } else { $null }
+                        AltRestoreCmd = if ($package.altrestorecmd) { $package.altrestorecmd } else { $null }
+                        AltRestoreCmdArgs = if ($package.altrestorecmdargs) { $package.altrestorecmdargs } else { $null }
+                        WaitAfterInstallerExitsMs = if ($package.waitafterinstallerexitsms) { $package.waitafterinstallerexitsms } else { $null }
+                        DontCopyInstallerLocal = if ($package.dontcopyinstallerlocal) { $package.dontcopyinstallerlocal } else { $null }
+                        CopyInstallerFolderLocal = if ($package.copyinstallerfolderlocal) { $package.copyinstallerfolderlocal } else { $null }
+                        InstallerFolder = if ($package.installerfolder) { $package.installerfolder } else { $null }
+                        PreActivationScript = if ($package.preactivationscript) { $package.preactivationscript } else { $null }
+                        PostActivationScript = if ($package.postactivationscript) { $package.postactivationscript } else { $null }
+                        PreDeactivationScript = if ($package.predeactivationscript) { $package.predeactivationscript } else { $null }
+                        PostDeactivationScript = if ($package.postdeactivationscript) { $package.postdeactivationscript } else { $null }
+                        NoCallToHome = if ($package.nocalltohome) { $package.nocalltohome } else { $null }
+                        DontCreateFlexAppOne = if ($package.dontcreateflexappone) { $package.dontcreateflexappone } else { $null }
+                        DontCreateFlexAppOneV1 = if ($package.dontcreateflexapponev1) { $package.dontcreateflexapponev1 } else { $null }
+                        DontCreateFlexAppOneV2 = if ($package.dontcreateflexapponev2) { $package.dontcreateflexapponev2 } else { $null }
+                        FlexAppOneCliOverride = if ($package.flexapponeclioverride) { $package.flexapponeclioverride } else { $null }
+                        DontCaptureUserProfileData = if ($package.dontcaptureuserprofiledata) { $package.dontcaptureuserprofiledata } else { $null }
+                        DontCaptureUserRegistry = if ($package.dontcaptureuserregistry) { $package.dontcaptureuserregistry } else { $null }
+                        DontCapture = if ($package.dontcapture) { $package.dontcapture } else { $null }
+                        PackagesXml = if ($package.packagesxml) { $package.packagesxml } else { $null }
+                        PuConfiguration = if ($package.puconfiguration) { $package.puconfiguration } else { $null }
+                        PuFilter = if ($package.pufilter) { $package.pufilter } else { $null }
+                        PuDescription = if ($package.pudescription) { $package.pudescription } else { $null }
+                        CustomStorageUrl = if ($package.customstorageurl) { $package.customstorageurl } else { $null }
+                        AzureMaximumConcurrency = if ($package.azuremaximumconcurrency) { $package.azuremaximumconcurrency } else { $null }
+                        AzureInitialTransferSizeMb = if ($package.azureinitialtransfersizemb) { $package.azureinitialtransfersizemb } else { $null }
+                        AzureMaximumTransferSizeMb = if ($package.azuremaximumtransfersizemb) { $package.azuremaximumtransfersizemb } else { $null }
                     }
                     $updateCandidates += $updateCandidate
-                    Write-LogMessage "Found new package '$packageName' for packaging with version $chocolateyVersion" -Level Success -Tab "Chocolatey"
+                    Write-LogMessage "Found new package '$packageName' for packaging with version $formattedChocoVersion" -Level Success -Tab "Chocolatey"
                 }
             }
             

@@ -463,6 +463,7 @@
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
@@ -486,9 +487,22 @@
                                         Content="Scan for Updates" 
                                         Style="{StaticResource ModernButton}"/>
 
+                                <!-- Winget Installer Path Row -->
+                                <Label Grid.Row="1" Grid.Column="0" Content="Winget Installer:" Style="{StaticResource ModernLabel}"/>
+                                <TextBox x:Name="WingetInstallerTextBox" 
+                                         Grid.Row="1" Grid.Column="1" 
+                                         Style="{StaticResource ModernTextBox}"
+                                         Margin="0,0,10,0"
+                                         Text="PreReqs\Winget\winget-installer.ps1"/>
+                                <Button x:Name="WingetInstallerBrowseButton" 
+                                        Grid.Row="1" Grid.Column="2" 
+                                        Content="Browse" 
+                                        Style="{StaticResource SecondaryButton}"
+                                        Margin="0,0,10,0"/>
+
                                 <!-- Scan Status Row -->
                                 <Label x:Name="WingetCurrentPackageLabel" 
-                                       Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4"
+                                       Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4"
                                        Content="Ready to scan..." 
                                        Foreground="{DynamicResource PrimaryTextBrush}"
                                        HorizontalAlignment="Center"
@@ -496,7 +510,7 @@
                                        FontSize="11"
                                        Margin="0,10,0,0"/>
 
-                                <Label Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" 
+                                <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" 
                                        Content="Scanning can take a while depending on the number of packages."
                                        Foreground="{DynamicResource SecondaryTextBrush}" 
                                        FontStyle="Italic" 
@@ -504,7 +518,7 @@
                                        Margin="0,10,0,0"/>
                                 
                                 <Button x:Name="WingetCancelScanButton" 
-                                        Grid.Row="2" Grid.Column="3" 
+                                        Grid.Row="3" Grid.Column="3" 
                                         Content="Cancel Scan" 
                                         Style="{StaticResource SecondaryButton}"
                                         Visibility="Collapsed"/>

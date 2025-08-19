@@ -389,6 +389,25 @@ function Setup-WPFEventHandlers {
             })
         }
         
+        $wingetInstallerBrowseButton = Find-Control "WingetInstallerBrowseButton"
+        if ($wingetInstallerBrowseButton) {
+            $wingetInstallerBrowseButton.Add_Click({
+                $openFileDialog = New-Object Microsoft.Win32.OpenFileDialog
+                $openFileDialog.Filter = "PowerShell Scripts (*.ps1)|*.ps1"
+                $openFileDialog.RestoreDirectory = $true
+                $openFileDialog.Title = "Select Winget Installer Script"
+                if ($openFileDialog.ShowDialog() -eq $true) {
+                    $wingetInstallerTextBox = Find-Control "WingetInstallerTextBox"
+                    if ($wingetInstallerTextBox) {
+                        $wingetInstallerTextBox.Text = $openFileDialog.FileName
+                        # Use dynamic theme brush instead of hardcoded black
+                        $wingetInstallerTextBox.Foreground = $script:WPFMainWindow.Resources["PrimaryTextBrush"]
+                        Save-WPFWingetSettings
+                    }
+                }
+            })
+        }
+        
         $wingetScanButton = Find-Control "WingetScanButton"
         if ($wingetScanButton) {
             $wingetScanButton.Add_Click({
@@ -1340,12 +1359,20 @@ function Save-WPFWingetSettings {
         Write-LogMessage "Save-WPFWingetSettings called from: $((Get-PSCallStack)[1].Command)" -Level Info
         if ($script:WPFMainWindow) {
             $wingetJobFileTextBox = $script:WPFMainWindow.FindName("WingetJobFileTextBox")
+            $wingetInstallerTextBox = $script:WPFMainWindow.FindName("WingetInstallerTextBox")
+            
             if ($wingetJobFileTextBox) {
                 Write-LogMessage "Saving Winget job file: '$($wingetJobFileTextBox.Text)'" -Level Info
                 $script:Config.WingetSettings.JobFile = $wingetJobFileTextBox.Text
-                Save-AllSettings -WingetJobFile $wingetJobFileTextBox.Text
-                Write-LogMessage "WPF Winget settings saved" -Level Info
             }
+            
+            if ($wingetInstallerTextBox) {
+                Write-LogMessage "Saving Winget installer path: '$($wingetInstallerTextBox.Text)'" -Level Info
+                $script:Config.WingetSettings.InstallerPath = $wingetInstallerTextBox.Text
+            }
+            
+            Save-AllSettings -WingetJobFile $wingetJobFileTextBox.Text -WingetInstallerPath $wingetInstallerTextBox.Text
+            Write-LogMessage "WPF Winget settings saved" -Level Info
         }
     }
     catch {

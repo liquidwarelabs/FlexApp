@@ -34,8 +34,12 @@ function Switch-WPFTheme {
         $chocoJobFile = if ($chocoJobFileTextBox) { $chocoJobFileTextBox.Text } else { "" }
         $wingetJobFile = if ($wingetJobFileTextBox) { $wingetJobFileTextBox.Text } else { "" }
         
-        Write-LogMessage "Theme switch - Current UI values: Choco='$chocoJobFile', Winget='$wingetJobFile'" -Level Info
-        Write-LogMessage "Theme switch - Current config values: Choco='$($script:Config.ChocoSettings.JobFile)', Winget='$($script:Config.WingetSettings.JobFile)'" -Level Info
+        # Get installer path from UI
+        $wingetInstallerTextBox = Find-Control "WingetInstallerTextBox"
+        $wingetInstallerPath = if ($wingetInstallerTextBox) { $wingetInstallerTextBox.Text } else { "" }
+        
+        Write-LogMessage "Theme switch - Current UI values: Choco='$chocoJobFile', Winget='$wingetJobFile', Installer='$wingetInstallerPath'" -Level Info
+        Write-LogMessage "Theme switch - Current config values: Choco='$($script:Config.ChocoSettings.JobFile)', Winget='$($script:Config.WingetSettings.JobFile)', Installer='$($script:Config.WingetSettings.InstallerPath)'" -Level Info
         
 
         
@@ -52,6 +56,13 @@ function Switch-WPFTheme {
             $script:Config.WingetSettings.JobFile = $wingetJobFile
         } else {
             Write-LogMessage "Theme switch - Preserving existing Winget job file: '$($script:Config.WingetSettings.JobFile)'" -Level Info
+        }
+        
+        if (![string]::IsNullOrEmpty($wingetInstallerPath) -and $wingetInstallerPath -ne "PreReqs\Winget\winget-installer.ps1") {
+            Write-LogMessage "Theme switch - Updating Winget installer path from UI: '$wingetInstallerPath'" -Level Info
+            $script:Config.WingetSettings.InstallerPath = $wingetInstallerPath
+        } else {
+            Write-LogMessage "Theme switch - Preserving existing Winget installer path: '$($script:Config.WingetSettings.InstallerPath)'" -Level Info
         }
         
         # Save to file
@@ -165,6 +176,20 @@ function Switch-WPFTheme {
                 $wingetJobFileTextBox.Text = "Click Browse to select CSV file..."
                 $wingetJobFileTextBox.Foreground = $script:WPFMainWindow.Resources["SecondaryTextBrush"]
                 Write-LogMessage "Refresh - Set Winget textbox to placeholder text" -Level Info
+            }
+        }
+        
+        # Refresh Winget installer path setting
+        $wingetInstallerTextBox = Find-Control "WingetInstallerTextBox"
+        if ($wingetInstallerTextBox) {
+            if (![string]::IsNullOrWhiteSpace($script:Config.WingetSettings.InstallerPath)) {
+                $wingetInstallerTextBox.Text = $script:Config.WingetSettings.InstallerPath
+                $wingetInstallerTextBox.Foreground = $script:WPFMainWindow.Resources["PrimaryTextBrush"]
+                Write-LogMessage "Refresh - Set Winget installer textbox to: '$($wingetInstallerTextBox.Text)'" -Level Info
+            } else {
+                $wingetInstallerTextBox.Text = "PreReqs\Winget\winget-installer.ps1"
+                $wingetInstallerTextBox.Foreground = $script:WPFMainWindow.Resources["PrimaryTextBrush"]
+                Write-LogMessage "Refresh - Set Winget installer textbox to default path" -Level Info
             }
         }
         
