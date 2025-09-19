@@ -53,14 +53,45 @@ The application supports multiple package sources and provides centralized confi
 - **MSEndpointMgr Integration** - Uses mature, tested module for Intune Win32 app uploads
 - **Template-based Metadata** - Dynamic application metadata generation for Intune packages
 
-## Prerequisites
+## 🛠 Requirements
 
-- **Windows PowerShell 5.1** or PowerShell 7+
-- **.NET Framework 4.5+** (for WPF assemblies)
-- **Administrator privileges** (for Configuration Manager features)
-- **ProfileUnity Server** (for ProfileUnity integration)
-- **Microsoft Configuration Manager** (optional, for CM features)
-- **Azure App Registration** (for Intune integration)
+* [.NET 8.0 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+* PowerShell module: [`IntuneWin32App`](https://github.com/MSEndpointMgr/IntuneWin32App)
+* A config file named after the executable (e.g. `FlexApp2Intune.config`)
+* Azure App Registration with permissions to use Microsoft Graph API
+* Microsoft's official [IntuneWinAppUtil.exe](https://github.com/microsoft/Microsoft-Win32-Content-Prep-Tool)
+
+## 🧾 Azure App Registration Setup
+
+1. Go to the Azure Portal.
+2. Navigate to Azure Active Directory → App registrations → + New registration.
+3. Give the app a name (e.g., FlexApp2Intune) and select Single tenant.
+4. Leave redirect URI empty and click Register.
+5. After registration, copy the Application (client) ID and Directory (tenant) ID.
+6. Go to Certificates & secrets, click + New client secret, add a description and expiration, and copy the secret value immediately.
+7. Then go to API permissions:
+    * Click + Add a permission
+    * Choose Microsoft Graph → Application permissions
+    * Add DeviceManagementApps.ReadWrite.All
+    * Click Grant admin consent for your tenant
+
+This allows the tool to authenticate and interact with the Intune API securely.
+
+## ⚙ Installing the PowerShell Module
+
+To install the required module, run:
+
+```powershell
+Install-Module -Name IntuneWin32App -Scope CurrentUser -Force
+```
+
+More details: [IntuneWin32App GitHub](https://github.com/MSEndpointMgr/IntuneWin32App)
+
+## 📥 Required Microsoft Intune Wrapper Tool
+
+Manually download `IntuneWinAppUtil.exe` from Microsoft's official repository:
+
+* 🔗 [Microsoft-Win32-Content-Prep-Tool](https://github.com/microsoft/Microsoft-Win32-Content-Prep-Tool)
 
 ## Installation
 
@@ -188,7 +219,7 @@ To use the Microsoft Intune integration:
 
 ```
 FUM/                                       # Main application directory
-├── FlexAppUpdateManager.psd1              # Module manifest (v1.2.4)
+├── FlexAppUpdateManager.psd1              # Module manifest (v1.5.0)
 ├── FlexAppUpdateManager.psm1              # Main module file (v1.5.0)
 ├── README.md                              # This documentation
 ├── Config/                                # Configuration files
@@ -307,50 +338,45 @@ FUM/                                       # Main application directory
 - **Enhanced: Error Handling** - Improved error handling for Intune operations
 - **Enhanced: Logging** - Enhanced logging for Intune operations and troubleshooting
 
-### v1.2.4 - Enhanced Stability and Performance
-- Improved error handling across all modules
-- Enhanced SSL/TLS support with intelligent fallback
-- Better progress indicators and status updates
-- ProfileUnity Configuration Management improvements
-- Performance optimizations for large package lists
-- More robust connection handling
-- Clearer error messages for troubleshooting
-
-### v1.2.0 - ProfileUnity Configuration Management
-- Added ProfileUnity Configuration tab for managing FlexApp assignments
-- Scan ProfileUnity configurations for outdated FlexApp versions
-- Preview changes before committing
-- Bulk update FlexApp assignments to latest versions
-- Optional automatic deployment after save
-- Maintains filter assignments during updates
-- Comprehensive logging of all configuration changes
-
-### v1.1.0 - Major Enhancements
-- Added Winget support for package updates
-- Enhanced handling of null/empty versions in FlexApp inventory
-- Support for creating new packages when not in inventory
-- Improved SSL/TLS security (TLS 1.2/1.3 support)
-- Fixed exact package matching (no wildcards)
-- Better error handling and logging
-- Centralized settings management
-
-### v1.0.4 - Centralized Settings
-- New Settings tab for global configuration
-- Removed redundant fields across tabs
-- Enhanced user experience
-- Improved settings persistence
-
-### v1.0.1 - Stable Release
-- Fixed GUI launch issues
-- Fixed job file persistence during theme switching
-- Fixed Configuration Manager settings persistence
-- Fixed SSL certificate handling for ProfileUnity connections
-- Cleaned up codebase
-- Improved PowerShell 5.x compatibility
-
 ### v1.0.0 - Initial Release
 - Initial release with WPF interface
 - Basic Chocolatey and Configuration Manager support
+- Enhanced Stability and Performance
+  - Improved error handling across all modules
+  - Enhanced SSL/TLS support with intelligent fallback
+  - Better progress indicators and status updates
+  - ProfileUnity Configuration Management improvements
+  - Performance optimizations for large package lists
+  - More robust connection handling
+  - Clearer error messages for troubleshooting
+- ProfileUnity Configuration Management
+  - Added ProfileUnity Configuration tab for managing FlexApp assignments
+  - Scan ProfileUnity configurations for outdated FlexApp versions
+  - Preview changes before committing
+  - Bulk update FlexApp assignments to latest versions
+  - Optional automatic deployment after save
+  - Maintains filter assignments during updates
+  - Comprehensive logging of all configuration changes
+- Major Enhancements
+  - Added Winget support for package updates
+  - Enhanced handling of null/empty versions in FlexApp inventory
+  - Support for creating new packages when not in inventory
+  - Improved SSL/TLS security (TLS 1.2/1.3 support)
+  - Fixed exact package matching (no wildcards)
+  - Better error handling and logging
+  - Centralized settings management
+- Centralized Settings
+  - New Settings tab for global configuration
+  - Removed redundant fields across tabs
+  - Enhanced user experience
+  - Improved settings persistence
+- Stable Release
+  - Fixed GUI launch issues
+  - Fixed job file persistence during theme switching
+  - Fixed Configuration Manager settings persistence
+  - Fixed SSL certificate handling for ProfileUnity connections
+  - Cleaned up codebase
+  - Improved PowerShell 5.x compatibility
 
 ## Troubleshooting
 
