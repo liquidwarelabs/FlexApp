@@ -137,9 +137,8 @@ function Switch-WPFTheme {
                 }
                 
                 Write-LogMessage "DEBUG: About to force refresh..." -Level Info
-                # Force refresh
+                # Force refresh (simplified to avoid visual artifacts)
                 $script:WPFMainWindow.InvalidateVisual()
-                $script:WPFMainWindow.UpdateLayout()
                 Write-LogMessage "DEBUG: Refresh completed successfully" -Level Info
             }
             catch {

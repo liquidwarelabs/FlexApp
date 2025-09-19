@@ -18,23 +18,44 @@ function Initialize-FlexAppModule {
         Add-Type -TypeDefinition @"
             using System;
             using System.Runtime.InteropServices;
-            public class Win32 {
+            public class ConsoleWin32 {
                 [DllImport("kernel32.dll")]
                 public static extern IntPtr GetConsoleWindow();
                 
                 [DllImport("user32.dll")]
                 public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
                 
+                [DllImport("user32.dll")]
+                public static extern bool IsWindowVisible(IntPtr hWnd);
+                
+                [DllImport("user32.dll")]
+                public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+                
                 public const int SW_HIDE = 0;
                 public const int SW_MINIMIZE = 6;
                 public const int SW_RESTORE = 9;
+                public const int SW_SHOW = 5;
+                public const int SW_SHOWNA = 8;
+                public static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
+                public static readonly IntPtr HWND_NOTOPMOST = new IntPtr(-2);
+                public const uint SWP_NOSIZE = 0x0001;
+                public const uint SWP_NOMOVE = 0x0002;
+                public const uint SWP_NOZORDER = 0x0004;
+                public const uint SWP_HIDEWINDOW = 0x0080;
+                public const uint SWP_SHOWWINDOW = 0x0040;
             }
 "@
         
-        $consoleWindow = [Win32]::GetConsoleWindow()
+        $consoleWindow = [ConsoleWin32]::GetConsoleWindow()
         if ($consoleWindow -ne [IntPtr]::Zero) {
-            [Win32]::ShowWindow($consoleWindow, [Win32]::SW_MINIMIZE)
-            Write-Host "PowerShell console minimized - GUI will be the primary interface" -ForegroundColor Green
+            # Check if console debug is enabled in settings
+            if ($script:Config -and $script:Config.ConsoleDebug -eq $true) {
+                [ConsoleWin32]::ShowWindow($consoleWindow, [ConsoleWin32]::SW_SHOW)
+                Write-Host "PowerShell console visible for debug information" -ForegroundColor Yellow
+            } else {
+                [ConsoleWin32]::ShowWindow($consoleWindow, [ConsoleWin32]::SW_HIDE)
+                Write-Host "PowerShell console hidden - GUI will be the primary interface" -ForegroundColor Green
+            }
         }
     }
     catch {

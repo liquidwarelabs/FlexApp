@@ -1,40 +1,27 @@
 # FlexApp Update Manager v1.5.0
 
-A modern PowerShell-based application for managing package updates across multiple platforms including Chocolatey, Winget, Configuration Manager, ProfileUnity, and Microsoft Intune.
+A comprehensive PowerShell-based application for managing package updates across multiple platforms including Chocolatey, Winget, Configuration Manager, ProfileUnity, and Microsoft Intune.
 
-## 🚀 Quick Start
+## Table of Contents
+1. [Overview](#overview)
+2. [Features](#features)
+3. [Prerequisites](#prerequisites)
+4. [Installation](#installation)
+5. [Quick Start](#quick-start)
+6. [Usage](#usage)
+7. [Configuration](#configuration)
+8. [Project Structure](#project-structure)
+9. [Version History](#version-history)
+10. [Troubleshooting](#troubleshooting)
+11. [Support](#support)
 
-```powershell
-# Navigate to the FUM directory
-cd .\FUM
+## Overview
 
-# Import the module
-Import-Module .\FlexAppUpdateManager.psm1
+FlexApp Update Manager is a modern PowerShell-based GUI application that provides a unified interface for managing software updates across different package management systems. Built with WPF (Windows Presentation Foundation), it offers a responsive user interface with Material Design-inspired styling and comprehensive package management capabilities.
 
-# Launch the GUI
-Show-FlexAppUpdateManager
-```
+The application supports multiple package sources and provides centralized configuration management, making it an essential tool for IT administrators managing FlexApp packages across enterprise environments.
 
-### Alternative Launch Methods
-
-```powershell
-# Method 1: Direct module import and launch
-Import-Module .\FlexAppUpdateManager.psm1; Show-FlexAppUpdateManager
-
-# Method 2: Using the launcher script
-.\Scripts\Launch-FlexAppUpdateManager.ps1
-
-# Method 3: Using root directory launcher (if available)
-..\Launch.ps1
-```
-
-## 📋 Prerequisites
-
-- Windows PowerShell 5.1 or PowerShell 7+
-- .NET Framework 4.5+ (for WPF assemblies)
-- Administrator privileges (for Configuration Manager features)
-
-## 🎯 Features
+## Features
 
 ### Package Management
 - **Chocolatey Updates** - Scan and update Chocolatey packages from CSV files
@@ -45,7 +32,7 @@ Import-Module .\FlexAppUpdateManager.psm1; Show-FlexAppUpdateManager
 
 ### User Interface
 - **Modern WPF Interface** - Material Design with light/dark theme support
-- **Tabbed Navigation** - Organized workflow across different package sources including new Intune tab
+- **Tabbed Navigation** - Organized workflow across different package sources
 - **Real-time Status** - Live updates during scanning and processing operations
 - **Theme Persistence** - Settings and file paths persist across theme changes
 - **Intune Integration Tab** - Dedicated interface for Microsoft Intune application uploads
@@ -66,67 +53,113 @@ Import-Module .\FlexAppUpdateManager.psm1; Show-FlexAppUpdateManager
 - **MSEndpointMgr Integration** - Uses mature, tested module for Intune Win32 app uploads
 - **Template-based Metadata** - Dynamic application metadata generation for Intune packages
 
-## 📁 Project Structure
+## 🛠 Requirements
 
-```
-FUM/                                       # Main application directory
-├── FlexAppUpdateManager.psd1              # Module manifest
-├── FlexAppUpdateManager.psm1              # Main module file
-├── README.md                              # This documentation
-├── Config/                                # Configuration files
-│   ├── Configuration.ps1                  # Core configuration
-│   ├── Initialize-Module.ps1              # Module initialization
-│   ├── process-management.ps1             # Process management
-│   └── Settings-Persistence.ps1           # Settings persistence
-├── Functions/                             # Core functionality
-│   ├── Chocolatey/                        # Chocolatey functions
-│   ├── ConfigurationManager/              # Configuration Manager functions
-│   ├── Intune/                            # Microsoft Intune functions
-│   ├── ProfileUnity/                      # ProfileUnity functions
-│   ├── Shared/                            # Shared utilities
-│   ├── Winget/                            # Winget functions
-│   └── WPF/                               # WPF-specific functions
-├── GUI/                                   # WPF interface files
-│   ├── MainWindow.xaml                    # Main UI layout
-│   ├── EditApplicationsDialog.xaml        # Edit dialog
-│   └── Show-FlexAppUpdateManager.ps1      # Main window function
-├── Scripts/                               # Utility scripts
-│   ├── Launch-FlexAppUpdateManager.ps1    # Main launcher
-│   └── Test-FlexAppUpdateManager.ps1      # Test script
-├── Intune/                                # Intune utilities
-│   └── IntuneWinAppUtil.exe              # Microsoft Intune Win32 app packaging tool
-├── Docs/                                  # Documentation
-└── PreReqs/                               # Prerequisites
-    └── Winget/                            # Winget installation helpers
-```
+* [.NET 8.0 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+* PowerShell module: [`IntuneWin32App`](https://github.com/MSEndpointMgr/IntuneWin32App)
+* A config file named after the executable (e.g. `FlexApp2Intune.config`)
+* Azure App Registration with permissions to use Microsoft Graph API
+* Microsoft's official [IntuneWinAppUtil.exe](https://github.com/microsoft/Microsoft-Win32-Content-Prep-Tool)
 
-## 🔧 Usage
+## 🧾 Azure App Registration Setup
 
-### Basic Usage
+1. Go to the Azure Portal.
+2. Navigate to Azure Active Directory → App registrations → + New registration.
+3. Give the app a name (e.g., FlexApp2Intune) and select Single tenant.
+4. Leave redirect URI empty and click Register.
+5. After registration, copy the Application (client) ID and Directory (tenant) ID.
+6. Go to Certificates & secrets, click + New client secret, add a description and expiration, and copy the secret value immediately.
+7. Then go to API permissions:
+    * Click + Add a permission
+    * Choose Microsoft Graph → Application permissions
+    * Add DeviceManagementApps.ReadWrite.All
+    * Click Grant admin consent for your tenant
+
+This allows the tool to authenticate and interact with the Intune API securely.
+
+## ⚙ Installing the PowerShell Module
+
+To install the required module, run:
+
 ```powershell
-# Navigate to the FUM directory (if not already there)
+Install-Module -Name IntuneWin32App -Scope CurrentUser -Force
+```
+
+More details: [IntuneWin32App GitHub](https://github.com/MSEndpointMgr/IntuneWin32App)
+
+## 📥 Required Microsoft Intune Wrapper Tool
+
+Manually download `IntuneWinAppUtil.exe` from Microsoft's official repository:
+
+* 🔗 [Microsoft-Win32-Content-Prep-Tool](https://github.com/microsoft/Microsoft-Win32-Content-Prep-Tool)
+
+## Installation
+
+### Method 1: Direct Module Import
+```powershell
+# Navigate to the FUM directory
 cd .\FUM
 
-# Import the module (loads all functions and configurations)
+# Import the module
 Import-Module .\FlexAppUpdateManager.psm1
 
-# Launch the WPF GUI
+# Launch the GUI
 Show-FlexAppUpdateManager
 ```
 
-### One-Line Launch
+### Method 2: Using the Launcher Script
+```powershell
+# Use the dedicated launcher script
+.\Scripts\Launch-FlexAppUpdateManager.ps1
+```
+
+### Method 3: One-Line Launch
 ```powershell
 # Single command to import and launch
 Import-Module .\FlexAppUpdateManager.psm1; Show-FlexAppUpdateManager
 ```
 
-### Using the Launcher Script
-```powershell
-# Use the dedicated launcher script
-.\Scripts\Launch-FlexAppUpdateManager.ps1
+## Quick Start
 
-# The launcher handles module import and error checking automatically
-```
+1. **Download/Clone** the FlexApp Update Manager to your desired location
+2. **Navigate** to the FUM directory
+3. **Import** the module: `Import-Module .\FlexAppUpdateManager.psm1`
+4. **Launch** the GUI: `Show-FlexAppUpdateManager`
+5. **Configure** your settings in the Settings tab upon first launch
+6. **Select** your package source (Chocolatey, Winget, CM, ProfileUnity, or Intune)
+7. **Scan** for updates and process as needed
+
+## Usage
+
+### Basic Workflow
+
+#### Chocolatey/Winget Updates
+1. Navigate to the Chocolatey or Winget tab
+2. Load your CSV file containing package information
+3. Click "Scan for Updates" to compare with FlexApp inventory
+4. Review available updates in the grid
+5. Select packages to update and click "Start Updates"
+
+#### Configuration Manager Integration
+1. Go to the Configuration Manager tab
+2. Connect to your CM site server
+3. Export applications to review
+4. Edit applications as needed
+5. Process selected applications for FlexApp updates
+
+#### ProfileUnity Configuration Management
+1. Access the ProfileUnity tab
+2. Connect to your ProfileUnity server
+3. Load configurations to scan
+4. Review outdated FlexApp assignments
+5. Preview and commit changes
+
+#### Microsoft Intune Integration
+1. Open the Intune tab
+2. Configure Azure App Registration credentials
+3. Set up source and output folders
+4. Organize FlexApp packages
+5. Upload Win32 applications to Intune
 
 ### Testing the Installation
 ```powershell
@@ -137,55 +170,224 @@ Import-Module .\FlexAppUpdateManager.psm1; Show-FlexAppUpdateManager
 Import-Module .\FlexAppUpdateManager.psm1 -Verbose
 ```
 
-### Configuration Setup
+## Configuration
 
-First-time setup requires configuring connection settings:
+### First-Time Setup
 
-1. **ProfileUnity Connection** - Configure server name and credentials
-2. **FlexApp Client Path** - Set path to primary-client.exe
-3. **Job Files** - Select CSV files for Chocolatey and Winget scans
-4. **Configuration Manager** - Set site server and site code (if using CM)
-5. **Microsoft Intune** - Configure Azure App Registration credentials and paths
+The application requires initial configuration for various components:
 
-All settings are saved automatically and persist between sessions.
+1. **ProfileUnity Connection**
+   - Server name and port
+   - Authentication credentials
+   - FlexApp client path
 
-### Intune Configuration
+2. **File Paths**
+   - CSV files for Chocolatey and Winget scans
+   - Default JSON configuration file
+   - Output directories
+
+3. **Configuration Manager** (if using)
+   - Site server name
+   - Site code
+   - Connection credentials
+
+4. **Microsoft Intune** (if using)
+   - Azure App Registration details
+   - Client ID, Tenant ID, and Client Secret
+   - IntuneWinAppUtil.exe path
+   - Source and output folder paths
+
+### Intune Configuration Details
 
 To use the Microsoft Intune integration:
 
-1. **Azure App Registration** - Create an app registration in Azure AD with Microsoft Graph permissions
-2. **Client Credentials** - Configure Client ID, Tenant ID, and Client Secret
-3. **IntuneWinAppUtil.exe** - Set path to Microsoft's Intune Win32 app packaging tool
-4. **Source/Output Folders** - Configure paths for FlexApp packages and Intune upload files
-5. **Application Templates** - Customize metadata templates for Intune applications
+1. **Azure App Registration**
+   - Create an app registration in Azure AD
+   - Grant Microsoft Graph permissions
+   - Generate client secret
 
-The Intune tab provides connection testing and real-time upload progress monitoring.
+2. **Required Permissions**
+   - `Application.ReadWrite.All`
+   - `DeviceManagementApps.ReadWrite.All`
 
-## 📚 Documentation
+3. **IntuneWinAppUtil.exe**
+   - Download from Microsoft
+   - Set path in Intune settings
+   - Used for Win32 app packaging
 
-- [Main Documentation](Docs/README.md) - Comprehensive guide
-- [WPF Implementation](Docs/README-WPF.md) - WPF-specific details
-- [Implementation Summary](Docs/WPF-IMPLEMENTATION-SUMMARY.md) - Technical details
+## Project Structure
 
-## 🛠️ Development
+```
+FUM/                                       # Main application directory
+├── FlexAppUpdateManager.psd1              # Module manifest (v1.2.4)
+├── FlexAppUpdateManager.psm1              # Main module file (v1.5.0)
+├── README.md                              # This documentation
+├── Config/                                # Configuration files
+│   ├── Configuration.ps1                  # Core configuration
+│   ├── Initialize-Module.ps1              # Module initialization
+│   ├── process-management.ps1             # Process management
+│   └── Settings-Persistence.ps1           # Settings persistence
+├── Functions/                             # Core functionality
+│   ├── Chocolatey/                        # Chocolatey functions
+│   │   ├── Complete-ChocoJobMonitoring.ps1
+│   │   ├── Get-ChocolateyPackageVersion.ps1
+│   │   ├── Get-ProfileUnityFlexApps.ps1
+│   │   └── Start-ChocoJobMonitoring.ps1
+│   ├── ConfigurationManager/              # Configuration Manager functions
+│   │   ├── Compare-ApplicationVersions.ps1
+│   │   ├── Connect-ConfigurationManager.ps1
+│   │   ├── Get-CMApplicationList.ps1
+│   │   ├── Get-FlexAppInventoryForCM.ps1
+│   │   ├── Process-SelectedApplications.ps1
+│   │   └── Show-EditApplicationsDialog.ps1
+│   ├── Intune/                            # Microsoft Intune functions
+│   │   ├── Add-IntuneApplicationMSEndpointMgr.ps1
+│   │   ├── Connect-IntuneGraph.ps1
+│   │   ├── New-IntunePackage.ps1
+│   │   ├── Organize-FlexAppPackages.ps1
+│   │   └── Start-IntuneUpload.ps1
+│   ├── ProfileUnity/                      # ProfileUnity functions
+│   │   ├── Get-ProfileUnityConfiguration.ps1
+│   │   ├── Get-ProfileUnityConfigurations.ps1
+│   │   ├── Get-ProfileUnityFilterNameById.ps1
+│   │   ├── Get-ProfileUnityFilters.ps1
+│   │   ├── ProfileUnity-Connection.ps1
+│   │   ├── ProfileUnity-Globals.ps1
+│   │   └── ProfileUnity-Module.ps1
+│   ├── Shared/                            # Shared utilities
+│   │   ├── Get-SecureCredentials.ps1
+│   │   ├── Initialize-SSLPolicy.ps1
+│   │   ├── Start-PackageUpdate.ps1
+│   │   └── Write-LogMessage.ps1
+│   ├── Winget/                            # Winget functions
+│   │   ├── Complete-WingetJobMonitoring.ps1
+│   │   ├── Get-WingetPackageVersion.ps1
+│   │   └── Start-WingetJobMonitoring.ps1
+│   └── WPF/                               # WPF-specific functions
+│       ├── Connect-WPFConfigurationManager.ps1
+│       ├── Connect-WPFProfileUnityServer.ps1
+│       ├── Disconnect-WPFConfigurationManager.ps1
+│       ├── Disconnect-WPFProfileUnityServer.ps1
+│       ├── Get-WPFChocoUpdateCandidates.ps1
+│       ├── Get-WPFWingetUpdateCandidates.ps1
+│       ├── Import-WPFProfileUnityConfigurations.ps1
+│       ├── Initialize-WPFPackageSources.ps1
+│       ├── Load-WPFIntuneSettings.ps1
+│       ├── New-WPFApplicationEditModel.ps1
+│       ├── Process-WPFSelectedApplications.ps1
+│       ├── Save-WPFGlobalSettings.ps1
+│       ├── Save-WPFIntuneSettings.ps1
+│       ├── Set-WPFChocoEventHandlers.ps1
+│       ├── Set-WPFCMEventHandlers.ps1
+│       ├── Set-WPFProfileUnityEventHandlers.ps1
+│       ├── Set-WPFWingetEventHandlers.ps1
+│       ├── Show-WPFEditApplicationsDialog.ps1
+│       ├── Show-WPFPreviewDialog.ps1
+│       ├── Start-WPFChocoUpdateScan.ps1
+│       ├── Start-WPFCMPackageUpdate.ps1
+│       ├── Start-WPFIntuneUpload.ps1
+│       ├── Start-WPFPackageUpdate.ps1
+│       ├── Start-WPFProfileUnityCommit.ps1
+│       ├── Start-WPFProfileUnitySave.ps1
+│       ├── Start-WPFProfileUnityScan.ps1
+│       ├── Start-WPFWingetUpdateScan.ps1
+│       ├── Stop-WPFAllProcesses.ps1
+│       ├── Stop-WPFIntuneUpload.ps1
+│       ├── Switch-WPFTheme.ps1
+│       ├── Test-WPFGlobalSettings.ps1
+│       ├── Test-WPFIntuneConnection.ps1
+│       ├── Update-WPFChocoButtonStates.ps1
+│       ├── Update-WPFCMButtonStates.ps1
+│       ├── Update-WPFProfileUnityButtonStates.ps1
+│       └── Update-WPFWingetButtonStates.ps1
+├── GUI/                                   # WPF interface files
+│   ├── EditApplicationsDialog.xaml        # Edit dialog
+│   ├── MainWindow.xaml                    # Main UI layout
+│   └── Show-FlexAppUpdateManager.ps1      # Main window function
+├── Scripts/                               # Utility scripts
+│   ├── Deploy-FlexAppUpdateManager.ps1    # Deployment script
+│   ├── Launch-FlexAppUpdateManager.ps1    # Main launcher
+│   ├── Test-FlexAppUpdateManager-System.ps1 # System test
+│   ├── Test-FlexAppUpdateManager.ps1      # Basic test
+│   ├── Test-IntuneUpload-MSEndpointMgr.ps1 # Intune test
+│   └── Test-On-Different-System.bat       # Cross-system test
+├── Intune/                                # Intune utilities
+│   └── IntuneWinAppUtil.exe              # Microsoft Intune Win32 app packaging tool
+├── Docs/                                  # Documentation
+│   ├── README-WPF.md                      # WPF-specific documentation
+│   ├── README.md                          # Main documentation
+│   └── WPF-IMPLEMENTATION-SUMMARY.md      # Technical implementation details
+└── PreReqs/                               # Prerequisites
+    └── Winget/                            # Winget installation helpers
+        └── [winget installer files]
+```
 
-### Architecture
-- **Modular Design** - Separated by functionality
-- **WPF Integration** - Modern UI with PowerShell backend
-- **Event-Driven** - Responsive user interface
-- **Thread-Safe** - Background processing with UI updates
+## Version History
 
-### Extending Functionality
-1. Add new functions to appropriate subdirectories
-2. Update the main module file to load new functions
-3. Add corresponding WPF UI elements if needed
-4. Update documentation
+### v1.5.0 (Current) - Microsoft Intune Integration
+- **NEW: Microsoft Intune Integration** - Complete Intune Win32 app upload functionality
+- **NEW: MSEndpointMgr Module Integration** - Uses mature, tested module for reliable Intune uploads
+- **NEW: Intune Tab** - Dedicated WPF interface for Intune configuration and management
+- **NEW: Azure App Registration Support** - Secure credential management for Microsoft Graph API
+- **NEW: Template-based Metadata** - Dynamic application metadata generation for Intune packages
+- **NEW: Intune Connection Testing** - Built-in connectivity testing for Azure/Intune services
+- **NEW: Intune Settings Persistence** - Automatic saving of Intune configuration and credentials
+- **NEW: IntuneWinAppUtil Integration** - Seamless integration with Microsoft's packaging tool
+- **NEW: Background Intune Uploads** - Non-blocking upload operations with progress monitoring
+- **Enhanced: WPF Interface** - Added Intune tab with comprehensive configuration options
+- **Enhanced: Error Handling** - Improved error handling for Intune operations
+- **Enhanced: Logging** - Enhanced logging for Intune operations and troubleshooting
 
-## 🐛 Troubleshooting
+### v1.2.4 - Enhanced Stability and Performance
+- Improved error handling across all modules
+- Enhanced SSL/TLS support with intelligent fallback
+- Better progress indicators and status updates
+- ProfileUnity Configuration Management improvements
+- Performance optimizations for large package lists
+- More robust connection handling
+- Clearer error messages for troubleshooting
+
+### v1.2.0 - ProfileUnity Configuration Management
+- Added ProfileUnity Configuration tab for managing FlexApp assignments
+- Scan ProfileUnity configurations for outdated FlexApp versions
+- Preview changes before committing
+- Bulk update FlexApp assignments to latest versions
+- Optional automatic deployment after save
+- Maintains filter assignments during updates
+- Comprehensive logging of all configuration changes
+
+### v1.1.0 - Major Enhancements
+- Added Winget support for package updates
+- Enhanced handling of null/empty versions in FlexApp inventory
+- Support for creating new packages when not in inventory
+- Improved SSL/TLS security (TLS 1.2/1.3 support)
+- Fixed exact package matching (no wildcards)
+- Better error handling and logging
+- Centralized settings management
+
+### v1.0.4 - Centralized Settings
+- New Settings tab for global configuration
+- Removed redundant fields across tabs
+- Enhanced user experience
+- Improved settings persistence
+
+### v1.0.1 - Stable Release
+- Fixed GUI launch issues
+- Fixed job file persistence during theme switching
+- Fixed Configuration Manager settings persistence
+- Fixed SSL certificate handling for ProfileUnity connections
+- Cleaned up codebase
+- Improved PowerShell 5.x compatibility
+
+### v1.0.0 - Initial Release
+- Initial release with WPF interface
+- Basic Chocolatey and Configuration Manager support
+
+## Troubleshooting
 
 ### Common Issues
 
-**Module Import Errors**
+#### Module Import Errors
 ```powershell
 # Make sure you're in the FUM directory
 Get-Location
@@ -197,7 +399,7 @@ Test-Path .\FlexAppUpdateManager.psm1
 Import-Module .\FlexAppUpdateManager.psm1 -Verbose
 ```
 
-**GUI Won't Launch**
+#### GUI Won't Launch
 ```powershell
 # Run the test script to check all components
 .\Scripts\Test-FlexAppUpdateManager.ps1
@@ -206,7 +408,7 @@ Import-Module .\FlexAppUpdateManager.psm1 -Verbose
 Get-Command Show-FlexAppUpdateManager
 ```
 
-**ProfileUnity Connection Issues**
+#### ProfileUnity Connection Issues
 ```powershell
 # Test SSL connectivity
 Test-NetConnection -ComputerName "your-server" -Port 8000
@@ -215,62 +417,68 @@ Test-NetConnection -ComputerName "your-server" -Port 8000
 Initialize-SSLPolicy
 ```
 
-**Permission Issues**
+#### Permission Issues
 - Ensure PowerShell is running as Administrator (required for CM features)
 - Check file permissions on the FUM directory
 - Verify network connectivity to ProfileUnity server
 
-**Theme/Settings Not Persisting**
+#### Theme/Settings Not Persisting
 - Settings are saved to: `$env:APPDATA\LiquidwareSparks\FlexAppUpdateManager\config.json`
 - Check if this directory is writable
 - Theme switching automatically saves job file paths and CM settings
 
-## 📄 License
+#### Intune Connection Issues
+- Verify Azure App Registration permissions
+- Check Client ID, Tenant ID, and Client Secret
+- Ensure IntuneWinAppUtil.exe is accessible
+- Test connection using the built-in connection test
+
+### Logging and Debugging
+
+The application provides comprehensive logging:
+- Console output with color-coded messages
+- File-based logging with configurable levels
+- Error tracking and debugging information
+- Verbose mode for detailed troubleshooting
+
+## Support
+
+### Documentation
+- [Main Documentation](Docs/README.md) - Comprehensive guide
+- [WPF Implementation](Docs/README-WPF.md) - WPF-specific details
+- [Implementation Summary](Docs/WPF-IMPLEMENTATION-SUMMARY.md) - Technical details
+
+### Getting Help
+For issues and questions:
+1. Check the troubleshooting section above
+2. Review the logging output
+3. Run the test script to verify functionality
+4. Check the implementation summary for technical details
+5. Review the version history for known issues and fixes
+
+### Testing
+```powershell
+# Run comprehensive system tests
+.\Scripts\Test-FlexAppUpdateManager-System.ps1
+
+# Test Intune functionality specifically
+.\Scripts\Test-IntuneUpload-MSEndpointMgr.ps1
+
+# Test on different systems
+.\Scripts\Test-On-Different-System.bat
+```
+
+## License
 
 This project is part of the FlexApp Update Manager suite.
 
-## 📈 Version History
-
-- **v1.5.0** - Major feature release with Microsoft Intune integration
-  - **NEW: Microsoft Intune Integration** - Complete Intune Win32 app upload functionality
-  - **NEW: MSEndpointMgr Module Integration** - Uses mature, tested module for reliable Intune uploads
-  - **NEW: Intune Tab** - Dedicated WPF interface for Intune configuration and management
-  - **NEW: Azure App Registration Support** - Secure credential management for Microsoft Graph API
-  - **NEW: Template-based Metadata** - Dynamic application metadata generation for Intune packages
-  - **NEW: Intune Connection Testing** - Built-in connectivity testing for Azure/Intune services
-  - **NEW: Intune Settings Persistence** - Automatic saving of Intune configuration and credentials
-  - **NEW: IntuneWinAppUtil Integration** - Seamless integration with Microsoft's packaging tool
-  - **NEW: Background Intune Uploads** - Non-blocking upload operations with progress monitoring
-  - **Enhanced: WPF Interface** - Added Intune tab with comprehensive configuration options
-  - **Enhanced: Error Handling** - Improved error handling for Intune operations
-  - **Enhanced: Logging** - Enhanced logging for Intune operations and troubleshooting
-- **v1.0.1** - Stable release with all critical fixes
-  - Fixed GUI launch issues (missing Test-WPFGlobalSettings function)
-  - Fixed job file persistence during theme switching
-  - Fixed Configuration Manager settings persistence  
-  - Fixed SSL certificate handling for ProfileUnity connections
-  - Cleaned up codebase (removed obsolete WinForms code and test files)
-  - Improved PowerShell 5.x compatibility
-- **v1.0.0** - Initial release with WPF interface
-
-## 📝 Memorial
+## Memorial
 
 This release is dedicated to the memory of Andreas Van Wingerden, who contributed to the FlexApp ecosystem and the broader IT community. His dedication to innovation and excellence continues to inspire the development of tools that make IT professionals' lives easier and more efficient.
 
 *In loving memory of Andreas Van Wingerden.*
 
-## 🤝 Contributing
+---
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## 📞 Support
-
-For issues and questions:
-1. Check the troubleshooting section
-2. Review the logging output
-3. Run the test script to verify functionality
-4. Check the implementation summary for technical details
+**FlexApp Update Manager v1.5.0**  
+*Comprehensive package management for enterprise environments*

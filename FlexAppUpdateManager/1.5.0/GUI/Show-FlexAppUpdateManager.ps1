@@ -116,6 +116,57 @@ function Show-FlexAppUpdateManager {
         
         Write-LogMessage "XAML loaded successfully, setting up event handlers..." -Level Info
         
+        # Set up window state event handlers with restore logic
+        $window.Add_StateChanged({
+            param($sender, $e)
+            Write-LogMessage "Window state changed to: $($sender.WindowState)" -Level Info
+            
+            # If window is minimized, ensure it can be restored
+            if ($sender.WindowState -eq [System.Windows.WindowState]::Minimized) {
+                Write-LogMessage "Window minimized - ensuring restore capability" -Level Info
+                # Set a flag to track minimized state
+                $script:WindowMinimized = $true
+            } elseif ($sender.WindowState -eq [System.Windows.WindowState]::Normal) {
+                Write-LogMessage "Window restored to normal" -Level Info
+                $script:WindowMinimized = $false
+            } elseif ($sender.WindowState -eq [System.Windows.WindowState]::Maximized) {
+                Write-LogMessage "Window maximized" -Level Info
+                $script:WindowMinimized = $false
+            }
+        })
+        
+        # Add window activated event with restore logic
+        $window.Add_Activated({
+            param($sender, $e)
+            Write-LogMessage "Window activated" -Level Info
+            
+            # If window was minimized and is now being activated, restore it
+            if ($script:WindowMinimized -and $sender.WindowState -eq [System.Windows.WindowState]::Minimized) {
+                Write-LogMessage "Attempting to restore minimized window" -Level Info
+                $sender.WindowState = [System.Windows.WindowState]::Normal
+                $sender.Show()
+                $sender.Activate()
+            }
+        })
+        
+        # Add window deactivated event (minimal)
+        $window.Add_Deactivated({
+            param($sender, $e)
+            Write-LogMessage "Window deactivated" -Level Info
+        })
+        
+        # Add window source initialized event (minimal)
+        $window.Add_SourceInitialized({
+            param($sender, $e)
+            Write-LogMessage "Window source initialized" -Level Info
+        })
+        
+        $window.Add_Closing({
+            param($sender, $e)
+            Write-LogMessage "Window is closing..." -Level Info
+            $script:WindowClosed = $true
+        })
+        
         # Set up event handlers for all buttons and controls
         Setup-WPFEventHandlers
         
@@ -185,6 +236,10 @@ function Show-FlexAppUpdateManager {
             # Signal that window is closed
             $script:WindowClosed = $true
             Write-LogMessage "Window and timers cleaned up successfully" -Level Info
+            
+            # Exit the PowerShell session when window closes
+            Write-LogMessage "Exiting PowerShell session..." -Level Info
+            exit
         })
         
         Write-LogMessage "Showing window..." -Level Info
@@ -832,6 +887,12 @@ function Setup-WPFEventHandlers {
         $settingsThemeToggleButton = Find-Control -ControlName "SettingsThemeToggleButton"
         if ($settingsThemeToggleButton) {
             $settingsThemeToggleButton.Add_Click({ Toggle-WPFTheme })
+        }
+        
+        # Console toggle button
+        $settingsConsoleToggleButton = Find-Control -ControlName "SettingsConsoleToggleButton"
+        if ($settingsConsoleToggleButton) {
+            $settingsConsoleToggleButton.Add_Click({ Toggle-WPFConsole })
         }
         
         # ===== INTUNE TAB EVENT HANDLERS =====
@@ -1488,6 +1549,22 @@ function Initialize-WPFSettings {
             }
         }
         
+        # Initialize console debug settings
+        $consoleDebugCheckBox = Find-Control -ControlName "ConsoleDebugCheckBox"
+        if ($consoleDebugCheckBox) {
+            # Ensure configuration is loaded
+            if (-not $script:Config) {
+                Write-LogMessage "Configuration not loaded, loading now..." -Level Info
+                Load-AllSettings
+            }
+            
+            # Ensure the ConsoleDebug property exists
+            if (-not $script:Config.PSObject.Properties.Match('ConsoleDebug')) {
+                $script:Config | Add-Member -MemberType NoteProperty -Name 'ConsoleDebug' -Value $false -Force
+            }
+            $consoleDebugCheckBox.IsChecked = $script:Config.ConsoleDebug
+        }
+        
         Write-LogMessage "WPF settings initialized successfully" -Level Info
         
         # Test progress bars
@@ -1744,6 +1821,16 @@ function Save-WPFGlobalSettings {
                     $script:Config | Add-Member -MemberType NoteProperty -Name 'DarkMode' -Value $false -Force
                 }
                 $script:Config.DarkMode = $darkModeRadio.IsChecked 
+            }
+            
+            # Save console debug setting
+            $consoleDebugCheckBox = Find-Control -ControlName "ConsoleDebugCheckBox"
+            if ($consoleDebugCheckBox) {
+                # Ensure the ConsoleDebug property exists
+                if (-not $script:Config.PSObject.Properties.Match('ConsoleDebug')) {
+                    $script:Config | Add-Member -MemberType NoteProperty -Name 'ConsoleDebug' -Value $false -Force
+                }
+                $script:Config.ConsoleDebug = $consoleDebugCheckBox.IsChecked
             }
             
             # Save Intune settings
@@ -2195,13 +2282,228 @@ function Toggle-WPFTheme {
         )
     }
     catch {
-        Write-LogMessage "Error toggling WPF theme: $($_.Exception.Message)" -Level Error
+        Write-LogMessage "Error toggling WPF theme: $($_.Exception.Message)" -Level Error                                                                       
         [System.Windows.MessageBox]::Show(
             "Error applying theme: $($_.Exception.Message)", 
             "Error", 
             [System.Windows.MessageBoxButton]::OK, 
             [System.Windows.MessageBoxImage]::Error
         )
+    }
+}
+
+# Test function to debug window state issues
+function Test-WindowState {
+    [CmdletBinding()]
+    param()
+    
+    if (-not $script:WPFMainWindow) {
+        Write-Host "No WPF window available for testing" -ForegroundColor Red
+        return
+    }
+    
+    Write-Host "Current window state: $($script:WPFMainWindow.WindowState)" -ForegroundColor Yellow
+    Write-Host "Window can resize: $($script:WPFMainWindow.ResizeMode)" -ForegroundColor Yellow
+    Write-Host "Window is visible: $($script:WPFMainWindow.IsVisible)" -ForegroundColor Yellow
+    Write-Host "Window is active: $($script:WPFMainWindow.IsActive)" -ForegroundColor Yellow
+    Write-Host "Window size: $($script:WPFMainWindow.Width) x $($script:WPFMainWindow.Height)" -ForegroundColor Yellow
+    Write-Host "Window position: $($script:WPFMainWindow.Left), $($script:WPFMainWindow.Top)" -ForegroundColor Yellow
+    Write-Host "Window show in taskbar: $($script:WPFMainWindow.ShowInTaskbar)" -ForegroundColor Yellow
+    Write-Host "Window style: $($script:WPFMainWindow.WindowStyle)" -ForegroundColor Yellow
+    Write-Host "Window max size: $($script:WPFMainWindow.MaxWidth) x $($script:WPFMainWindow.MaxHeight)" -ForegroundColor Yellow
+    Write-Host "Window min size: $($script:WPFMainWindow.MinWidth) x $($script:WPFMainWindow.MinHeight)" -ForegroundColor Yellow
+    
+    # Test maximize
+    Write-Host "Testing maximize..." -ForegroundColor Cyan
+    $script:WPFMainWindow.WindowState = [System.Windows.WindowState]::Maximized
+    Start-Sleep -Milliseconds 500
+    Write-Host "Window state after maximize: $($script:WPFMainWindow.WindowState)" -ForegroundColor Yellow
+    
+    # Test restore
+    Write-Host "Testing restore..." -ForegroundColor Cyan
+    $script:WPFMainWindow.WindowState = [System.Windows.WindowState]::Normal
+    Start-Sleep -Milliseconds 500
+    Write-Host "Window state after restore: $($script:WPFMainWindow.WindowState)" -ForegroundColor Yellow
+    
+    # Test minimize
+    Write-Host "Testing minimize..." -ForegroundColor Cyan
+    $script:WPFMainWindow.WindowState = [System.Windows.WindowState]::Minimized
+    Start-Sleep -Milliseconds 500
+    Write-Host "Window state after minimize: $($script:WPFMainWindow.WindowState)" -ForegroundColor Yellow
+    
+    # Restore
+    Write-Host "Restoring window..." -ForegroundColor Cyan
+    $script:WPFMainWindow.WindowState = [System.Windows.WindowState]::Normal
+    $script:WPFMainWindow.Show()
+    $script:WPFMainWindow.Activate()
+    $script:WPFMainWindow.Focus()
+    $script:WPFMainWindow.BringIntoView()
+    
+    # Force window to foreground using Windows API
+    try {
+        Add-Type -TypeDefinition @"
+            using System;
+            using System.Runtime.InteropServices;
+            public class Win32 {
+                [DllImport("user32.dll")]
+                public static extern bool SetForegroundWindow(IntPtr hWnd);
+                [DllImport("user32.dll")]
+                public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+                [DllImport("user32.dll")]
+                public static extern IntPtr GetActiveWindow();
+            }
+"@
+        $hwnd = $script:WPFMainWindow.Handle
+        [Win32]::SetForegroundWindow($hwnd)
+        [Win32]::ShowWindow($hwnd, 9) # SW_RESTORE
+        Write-Host "Window forced to foreground using Windows API" -ForegroundColor Green
+    }
+    catch {
+        Write-Host "Could not force window to foreground: $($_.Exception.Message)" -ForegroundColor Yellow
+    }
+}
+
+# Function to force window to foreground when it gets stuck
+function Show-Window {
+    [CmdletBinding()]
+    param()
+    
+    if (-not $script:WPFMainWindow) {
+        Write-Host "No WPF window available" -ForegroundColor Red
+        return
+    }
+    
+    try {
+        Write-Host "Forcing window to foreground..." -ForegroundColor Cyan
+        
+        # Set window state to normal and show
+        $script:WPFMainWindow.WindowState = [System.Windows.WindowState]::Normal
+        $script:WPFMainWindow.Show()
+        $script:WPFMainWindow.Activate()
+        $script:WPFMainWindow.Focus()
+        $script:WPFMainWindow.BringIntoView()
+        
+        # Use Windows API to force to foreground
+        Add-Type -TypeDefinition @"
+            using System;
+            using System.Runtime.InteropServices;
+            public class Win32 {
+                [DllImport("user32.dll")]
+                public static extern bool SetForegroundWindow(IntPtr hWnd);
+                [DllImport("user32.dll")]
+                public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+                [DllImport("user32.dll")]
+                public static extern bool IsIconic(IntPtr hWnd);
+                [DllImport("user32.dll")]
+                public static extern bool IsWindowVisible(IntPtr hWnd);
+            }
+"@
+        
+        $hwnd = $script:WPFMainWindow.Handle
+        $isMinimized = [Win32]::IsIconic($hwnd)
+        $isVisible = [Win32]::IsWindowVisible($hwnd)
+        
+        Write-Host "Window handle: $hwnd" -ForegroundColor Yellow
+        Write-Host "Is minimized: $isMinimized" -ForegroundColor Yellow
+        Write-Host "Is visible: $isVisible" -ForegroundColor Yellow
+        
+        if ($isMinimized) {
+            [Win32]::ShowWindow($hwnd, 9) # SW_RESTORE
+            Write-Host "Window restored from minimized state" -ForegroundColor Green
+        }
+        
+        [Win32]::SetForegroundWindow($hwnd)
+        Write-Host "Window forced to foreground" -ForegroundColor Green
+        
+        # Final WPF calls
+        $script:WPFMainWindow.Topmost = $true
+        Start-Sleep -Milliseconds 100
+        $script:WPFMainWindow.Topmost = $false
+        
+    }
+    catch {
+        Write-Host "Error forcing window to foreground: $($_.Exception.Message)" -ForegroundColor Red
+    }
+}
+
+# Function to test maximize button functionality
+function Test-MaximizeButton {
+    [CmdletBinding()]
+    param()
+    
+    if (-not $script:WPFMainWindow) {
+        Write-Host "No WPF window available" -ForegroundColor Red
+        return
+    }
+    
+    try {
+        Write-Host "Testing maximize button functionality..." -ForegroundColor Cyan
+        
+        # Add Windows API for window manipulation
+        Add-Type -TypeDefinition @"
+            using System;
+            using System.Runtime.InteropServices;
+            public class Win32 {
+                [DllImport("user32.dll")]
+                public static extern IntPtr GetWindowLong(IntPtr hWnd, int nIndex);
+                [DllImport("user32.dll")]
+                public static extern IntPtr SetWindowLong(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
+                [DllImport("user32.dll")]
+                public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+                [DllImport("user32.dll")]
+                public static extern bool IsZoomed(IntPtr hWnd);
+                [DllImport("user32.dll")]
+                public static extern bool IsIconic(IntPtr hWnd);
+                public const int GWL_STYLE = -16;
+                public const int WS_MAXIMIZEBOX = 0x00010000;
+                public const int WS_MINIMIZEBOX = 0x00020000;
+                public const int WS_SYSMENU = 0x00080000;
+                public const int SW_MAXIMIZE = 3;
+                public const int SW_RESTORE = 9;
+            }
+"@
+        
+        $hwnd = $script:WPFMainWindow.Handle
+        Write-Host "Window handle: $hwnd" -ForegroundColor Yellow
+        
+        # Check current window style
+        $style = [Win32]::GetWindowLong($hwnd, [Win32]::GWL_STYLE)
+        $hasMaximizeBox = ($style -band [Win32]::WS_MAXIMIZEBOX) -ne 0
+        $hasMinimizeBox = ($style -band [Win32]::WS_MINIMIZEBOX) -ne 0
+        $hasSysMenu = ($style -band [Win32]::WS_SYSMENU) -ne 0
+        
+        Write-Host "Window style flags:" -ForegroundColor Yellow
+        Write-Host "  Has Maximize Box: $hasMaximizeBox" -ForegroundColor Yellow
+        Write-Host "  Has Minimize Box: $hasMinimizeBox" -ForegroundColor Yellow
+        Write-Host "  Has System Menu: $hasSysMenu" -ForegroundColor Yellow
+        
+        if (-not $hasMaximizeBox) {
+            Write-Host "Maximize box is missing! Adding it..." -ForegroundColor Red
+            $newStyle = $style -bor [Win32]::WS_MAXIMIZEBOX -bor [Win32]::WS_MINIMIZEBOX -bor [Win32]::WS_SYSMENU
+            [Win32]::SetWindowLong($hwnd, [Win32]::GWL_STYLE, $newStyle)
+            Write-Host "Maximize box added" -ForegroundColor Green
+        }
+        
+        # Test maximize using Windows API
+        Write-Host "Testing maximize using Windows API..." -ForegroundColor Cyan
+        $result = [Win32]::ShowWindow($hwnd, [Win32]::SW_MAXIMIZE)
+        Write-Host "Maximize result: $result" -ForegroundColor Yellow
+        
+        Start-Sleep -Milliseconds 1000
+        
+        # Check if maximized
+        $isMaximized = [Win32]::IsZoomed($hwnd)
+        Write-Host "Is maximized (Windows API): $isMaximized" -ForegroundColor Yellow
+        Write-Host "Window state (WPF): $($script:WPFMainWindow.WindowState)" -ForegroundColor Yellow
+        
+        # Restore
+        Write-Host "Restoring window..." -ForegroundColor Cyan
+        [Win32]::ShowWindow($hwnd, [Win32]::SW_RESTORE)
+        $script:WPFMainWindow.WindowState = [System.Windows.WindowState]::Normal
+        
+    }
+    catch {
+        Write-Host "Error testing maximize button: $($_.Exception.Message)" -ForegroundColor Red
     }
 }
 

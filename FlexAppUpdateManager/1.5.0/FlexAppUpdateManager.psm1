@@ -79,7 +79,14 @@ foreach ($file in $wpfFiles) {
     . $file.FullName
 }
 
-# 8. Load GUI files (main Show-FlexAppUpdateManager function)
+# 8. Load Console functions
+$consoleFiles = Get-ChildItem -Path "$PSScriptRoot\Functions\Console" -Filter "*.ps1" -ErrorAction SilentlyContinue
+foreach ($file in $consoleFiles) {
+    Write-Verbose "Loading Console function: $($file.Name)"
+    . $file.FullName
+}
+
+# 9. Load GUI files (main Show-FlexAppUpdateManager function)
 $guiFiles = Get-ChildItem -Path "$PSScriptRoot\GUI" -Filter "*.ps1" -ErrorAction SilentlyContinue
 foreach ($file in $guiFiles) {
     Write-Verbose "Loading GUI file: $($file.Name)"
@@ -141,7 +148,15 @@ Export-ModuleMember -Function @(
     'Test-IntuneSettingsLoad',
     'Test-IntuneUIControls',
     'ConvertTo-EncryptedString',
-    'ConvertFrom-EncryptedString'
+    'ConvertFrom-EncryptedString',
+    'Test-WindowState',
+    'Show-Window',
+    'Test-MaximizeButton',
+    'Show-Console',
+    'Hide-Console',
+    'Toggle-Console',
+    'Toggle-WPFConsole',
+    'Show-Console-Simple'
 )
 
 # Module initialization message
