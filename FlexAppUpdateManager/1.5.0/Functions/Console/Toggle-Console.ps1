@@ -16,7 +16,6 @@ function Toggle-Console {
                 # Currently visible, so hide it - use aggressive hiding
                 [ConsoleWin32]::ShowWindow($consoleWindow, [ConsoleWin32]::SW_HIDE) | Out-Null
                 [ConsoleWin32]::SetWindowPos($consoleWindow, [IntPtr]::Zero, 0, 0, 0, 0, [ConsoleWin32]::SWP_HIDEWINDOW -bor [ConsoleWin32]::SWP_NOSIZE -bor [ConsoleWin32]::SWP_NOMOVE -bor [ConsoleWin32]::SWP_NOZORDER) | Out-Null
-                $script:Config.ConsoleDebug = $false
                 Write-LogMessage "Console window hidden" -Level Info
                 return "Hidden"
             } else {
@@ -24,7 +23,6 @@ function Toggle-Console {
                 [ConsoleWin32]::SetWindowPos($consoleWindow, [IntPtr]::Zero, 0, 0, 0, 0, [ConsoleWin32]::SWP_SHOWWINDOW -bor [ConsoleWin32]::SWP_NOSIZE -bor [ConsoleWin32]::SWP_NOMOVE -bor [ConsoleWin32]::SWP_NOZORDER) | Out-Null
                 [ConsoleWin32]::ShowWindow($consoleWindow, [ConsoleWin32]::SW_RESTORE) | Out-Null
                 [ConsoleWin32]::ShowWindow($consoleWindow, [ConsoleWin32]::SW_SHOW) | Out-Null
-                $script:Config.ConsoleDebug = $true
                 Write-LogMessage "Console window shown for debug information" -Level Info
                 return "Visible"
             }

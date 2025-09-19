@@ -42,3 +42,4 @@ function Hide-Console {
         return $false
     }
 }
+

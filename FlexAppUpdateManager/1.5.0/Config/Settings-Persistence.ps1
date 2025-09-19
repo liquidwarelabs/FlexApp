@@ -17,6 +17,7 @@ function Get-DefaultConfig {
         DefaultFile = "C:\Users\administrator\Desktop\Default.json"
         PrimaryServer = "https://pro2020:9075"
         DarkMode = $false
+        ConsoleDebug = $false
         CMSettings = @{
             SiteServer = ""
             SiteCode = ""

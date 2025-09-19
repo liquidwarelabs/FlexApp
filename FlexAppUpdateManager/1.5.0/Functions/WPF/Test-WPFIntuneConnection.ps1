@@ -8,8 +8,6 @@ function Test-WPFIntuneConnection {
     try {
         # Get UI controls
         $testButton = Find-Control -ControlName "IntuneTestConnectionButton"
-        $statusText = Find-Control -ControlName "IntuneStatusTextBlock"
-        $logTextBox = Find-Control -ControlName "IntuneLogTextBox"
 
         # Get configuration values
         $clientId = (Find-Control -ControlName "IntuneClientIdTextBox").Text.Trim()
@@ -42,15 +40,6 @@ function Test-WPFIntuneConnection {
         $testButton.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Normal, [System.Action]{
             $testButton.IsEnabled = $false
             $testButton.Content = "Testing..."
-        })
-
-        $statusText.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Normal, [System.Action]{
-            $statusText.Text = "Testing Azure connection..."
-        })
-
-        $logTextBox.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Normal, [System.Action]{
-            $logTextBox.AppendText("[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')] Testing Azure connection...`r`n")
-            $logTextBox.ScrollToEnd()
         })
 
         # Test connection in a background job
@@ -109,27 +98,9 @@ function Test-WPFIntuneConnection {
                 $global:IntuneTenantId = $tenantId
                 $global:IntuneClientSecret = $clientSecret
                 
-                $statusText.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Normal, [System.Action]{
-                    $statusText.Text = "Azure connection successful"
-                })
-
-                $logTextBox.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Normal, [System.Action]{
-                    $logTextBox.AppendText("[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')] Azure connection successful`r`n")
-                    $logTextBox.ScrollToEnd()
-                })
-
                 [System.Windows.MessageBox]::Show("Azure connection test successful!", "Connection Test", "OK", "Information")
                 Write-LogMessage "Azure connection test successful" -Level Success -Tab "Intune"
             } else {
-                $statusText.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Normal, [System.Action]{
-                    $statusText.Text = "Azure connection failed"
-                })
-
-                $logTextBox.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Normal, [System.Action]{
-                    $logTextBox.AppendText("[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')] Azure connection failed`r`n")
-                    $logTextBox.ScrollToEnd()
-                })
-
                 [System.Windows.MessageBox]::Show("Azure connection test failed. Please check your credentials and try again.", "Connection Test", "OK", "Error")
                 Write-LogMessage "Azure connection test failed" -Level Error -Tab "Intune"
             }
@@ -151,14 +122,6 @@ function Test-WPFIntuneConnection {
             Stop-Job -Job $testJob
             Remove-Job -Job $testJob -Force
 
-            $statusText.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Normal, [System.Action]{
-                $statusText.Text = "Connection test timed out"
-            })
-
-            $logTextBox.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Normal, [System.Action]{
-                $logTextBox.AppendText("[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')] Connection test timed out`r`n")
-                $logTextBox.ScrollToEnd()
-            })
 
             [System.Windows.MessageBox]::Show("Connection test timed out. Please check your network connection and try again.", "Connection Test", "OK", "Warning")
             Write-LogMessage "Azure connection test timed out" -Level Warning -Tab "Intune"
@@ -178,14 +141,6 @@ function Test-WPFIntuneConnection {
             $errorResult = Receive-Job -Job $testJob -ErrorAction SilentlyContinue
             Remove-Job -Job $testJob
 
-            $statusText.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Normal, [System.Action]{
-                $statusText.Text = "Connection test failed"
-            })
-
-            $logTextBox.Dispatcher.BeginInvoke([System.Windows.Threading.DispatcherPriority]::Normal, [System.Action]{
-                $logTextBox.AppendText("[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')] Connection test failed: $($errorResult.Exception.Message)`r`n")
-                $logTextBox.ScrollToEnd()
-            })
 
             [System.Windows.MessageBox]::Show("Connection test failed: $($errorResult.Exception.Message)", "Connection Test", "OK", "Error")
             Write-LogMessage "Azure connection test failed: $($errorResult.Exception.Message)" -Level Error -Tab "Intune"

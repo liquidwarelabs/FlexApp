@@ -42,3 +42,4 @@ function Show-Console-Simple {
         return $false
     }
 }
+
